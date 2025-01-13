@@ -1,0 +1,144 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #333;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+    .navbar .logo {
+        height: 40px;
+    }
+
+    .navbar .nav-links {
+        list-style: none;
+        display: flex;
+        gap: 80px;
+    }
+
+        .navbar .nav-links li {
+            display: inline;
+        }
+
+            .navbar .nav-links li a {
+                color: #fff;
+                text-decoration: none;
+            }
+
+.hero-section {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.hero-image {
+    height:100vh;
+    width:100%;
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width:100%;
+
+    & h1 , p
+{
+    word-spacing:10px;
+    font-family:'Cambria Math';
+}
+}
+
+    .hero-text h1 {
+        font-size: 50px;
+        margin: 0;
+    }
+
+    .hero-text p {
+        font-size: 20px;
+    }
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+    .card h3 {
+        color: #0078d7;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .card h2 {
+        font-size: 20px;
+        margin: 10px 0;
+    }
+
+    .card p {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .card .btn {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #0078d7;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+        .card .btn:hover {
+            background-color: #005bb5;
+        }
+
+.nav-logo {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:2rem;
+}
+
+.card:nth-child(1) h3 {
+    color: #34d83d;
+}
+
+.card:nth-child(1) .btn {
+    background: #34d83d;
+}
+
+.card:nth-child(3) h3 {
+    color: #ff4d4d;
+}
+
+.card:nth-child(3) .btn {
+    background: #ff4d4d;
+}
+
+.card:nth-child(n+4) h3 {
+    color: #364D62;
+}
+
+.card:nth-child(n+4) .btn {
+    background: #364D62;
+}
