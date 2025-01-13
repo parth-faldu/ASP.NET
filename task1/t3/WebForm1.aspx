@@ -3,7 +3,7 @@
 <asp:Content ID="HeaderContent" ContentPlaceHolderID="HeaderContent" runat="server">
     <div class="navbar">
         <div class="nav-logo">
-        <img src="https://www.telerik.com/favicon.ico?v=rebv1" alt="Progress Telerik Logo" class="logo" />
+        <img src="~/image/logo.jpg" alt="Progress Telerik Logo" class="logo" runat="server"  />
         <p>Progress &nbsp;Telerik</p>
         </div>
         <ul class="nav-links">
