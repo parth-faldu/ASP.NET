@@ -5,7 +5,7 @@
 <head runat="server">
     <title>Budget Buddy - Sign Up</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="../style.css"/>
 </head>
 <body class="money-bg">
     <form id="form1" runat="server">
@@ -31,7 +31,7 @@
             <button type="submit" class="btn-sign-up" id="btnSignUp" runat="server" OnClick="btnSignUp_Click">Sign Up</button>
 
             <div class="footer-text">
-                <p>Already have an account? <a href="index.aspx">Login here</a></p>
+                <p>Already have an account? <a href="../index.aspx">Login here</a></p>
             </div>
         </div>
     </form>

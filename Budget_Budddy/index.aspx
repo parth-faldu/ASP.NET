@@ -23,7 +23,7 @@
             <button type="submit" class="btn-login" id="btnLogin" runat="server" OnClick="btnLogin_Click">Login</button>
 
             <div class="footer-text">
-                <p>Don't have an account? <a href="SignUp.aspx">Sign Up</a></p>
+                <p>Don't have an account? <a href="pages/SignUp.aspx">Sign Up</a></p>
             </div>
         </div>
     </form>
