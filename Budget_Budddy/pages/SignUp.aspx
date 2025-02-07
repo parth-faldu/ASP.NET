@@ -9,29 +9,39 @@
 </head>
 <body class="money-bg">
     <form id="form1" runat="server">
-        <div class="sign-up-container">
-            <h2>Sign Up for Budget Buddy</h2>
+        <div class="login-container">
+            <h2>Create an Account</h2>
 
+            <!-- 🔹 Error Message Label -->
+            <asp:Label ID="lblError" runat="server" CssClass="error-label" ForeColor="Red"></asp:Label>
+
+            <!-- 🔹 Username Field -->
             <div class="form-group">
-                <input type="text" id="txtUsername" runat="server" placeholder="Username" required autocomplete="off" />
+                <asp:TextBox ID="txtUsername" runat="server" CssClass="input-field" placeholder="Username" autocomplete="off"></asp:TextBox>
             </div>
 
+            <!-- 🔹 Email Field -->
             <div class="form-group">
-                <input type="email" id="txtEmail" runat="server" placeholder="Email" required autocomplete="off"/>
+                <asp:TextBox ID="txtEmail" runat="server" CssClass="input-field" TextMode="Email" placeholder="Email" autocomplete="off"></asp:TextBox>
             </div>
 
+            <!-- 🔹 Password Field -->
             <div class="form-group">
-                <input type="password" id="txtPassword" runat="server" placeholder="Password" required autocomplete="off"/>
+                <asp:TextBox ID="txtPassword" runat="server" CssClass="input-field" TextMode="Password" placeholder="Password" autocomplete="off"></asp:TextBox>
             </div>
 
+            <!-- 🔹 Confirm Password Field -->
             <div class="form-group">
-                <input type="password" id="txtConfirmPassword" runat="server" placeholder="Confirm Password" required autocomplete="off"/>
+                <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="input-field" TextMode="Password" placeholder="Confirm Password" autocomplete="off"></asp:TextBox>
             </div>
 
-            <button type="submit" class="btn-sign-up" id="btnSignUp" runat="server" OnClick="btnSignUp_Click">Sign Up</button>
+            <!-- 🔹 Sign Up Button -->
+            <div class="form-group">
+                <asp:Button ID="btnSignUp" runat="server" CssClass="btn-login" Text="Sign Up" OnClick="btnSignUp_Click" />
+            </div>
 
             <div class="footer-text">
-                <p>Already have an account? <a href="../index.aspx">Login here</a></p>
+                <p>Already have an account? <asp:HyperLink ID="lnkLogin" runat="server" NavigateUrl="../index.aspx">Login</asp:HyperLink></p>
             </div>
         </div>
     </form>

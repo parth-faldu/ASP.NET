@@ -67,8 +67,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="index.aspx" />
+    <Content Include="App_Data\BudgetBuddy.mdf" />
+    <Content Include="App_Data\BudgetBuddy_log.ldf">
+      <DependentUpon>BudgetBuddy.mdf</DependentUpon>
+    </Content>
     <Content Include="images\money-bg.jpeg" />
+    <Content Include="index.aspx" />
     <Content Include="pages\dashboard.aspx" />
     <Content Include="pages\SignUp.aspx" />
     <Content Include="style.css" />

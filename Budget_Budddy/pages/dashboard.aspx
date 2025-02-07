@@ -16,7 +16,7 @@
             color: #fff;
         }
 
-        /* Header Section - Top Right Corner */
+        /* Header Section */
         .header {
             display: flex;
             justify-content: space-between;
@@ -32,7 +32,22 @@
             padding: 0 20px;
         }
 
-        /* Main Dashboard Container */
+        /* Logout Button */
+        .logout-button {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+
+        .logout-button:hover {
+            background-color: #e20073;
+        }
+
+        /* Dashboard Layout */
         .dashboard-container {
             display: flex;
             justify-content: center;
@@ -43,7 +58,7 @@
             padding:30px;
         }
 
-        /* Left Section (Expense Tracker) */
+        /* Expense Tracker */
         .left-section {
             background-color: #1e1e1e;
             padding: 20px;
@@ -60,7 +75,7 @@
             margin-bottom: 15px;
         }
 
-        input[type="text"], input[type="number"], input[type="date"] {
+        .input-field {
             width: 95%;
             padding: 10px;
             margin: 5px 0;
@@ -70,12 +85,13 @@
             color: #fff;
         }
 
-        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus {
+        .input-field:focus {
             outline: none;
             border-color: #005cff;
         }
 
-        button {
+        /* Add Expense Button */
+        .btn-add {
             background-color: #ff4081;
             color: #fff;
             padding: 12px 20px;
@@ -86,85 +102,151 @@
             margin-top: 15px;
         }
 
-        button:hover {
+        .btn-add:hover {
             background-color: #e20073;
         }
-        #expenseChart {
-            padding:5px 50px 50px 50px;
-        }
-        /* Right Section (Pie Chart) */
+
+        /* Expense Chart Section */
         .right-section {
             background-color: #1e1e1e;
             padding: 20px;
             border-radius: 8px;
             width: 37%;
-            height:460px;
+            aspect-ratio:1;
+            height: 460px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            padding:5px 50px 30px 50px;
         }
 
-        /* Footer Section (if required) */
+        /* Footer */
         .footer {
             text-align: center;
             color: #aaa;
             font-size: 14px;
             margin-top: 20px;
         }
+        .user-logout-con {
+            display:flex;
+            justify-content:center;
+            align-items:center;
 
+            & a{
+                text-decoration:none;
+            }
+        }
+        #expenseChart {
+            margin-top:50px;
+        }
+       .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        min-width: 300px; 
+        aspect-ratio: 1 / 1; 
+        margin: auto;
+    }
+
+    canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+    }
+
+    @media screen and (max-width: 600px) {
+        .chart-container {
+            max-width: 350px;
+            min-width: 250px;
+        }
+
+        #expenseChart {
+            width:70% !important;
+        }
+       
+    }
+        @media screen and (max-width:778px) {
+            .right-section {
+                width:90%;
+            }
+             .dashboard-container {
+            flex-direction: column;
+        }
+        }
+
+    /* Responsive Adjustments */
+    @media screen and (max-width: 998px) {
+        #expenseChart {
+            padding:0px 30px 100px 10px;
+            margin-top:unset;
+        }
+    }
+        @media screen and (max-width:1100px) {
+            #expenseChart {
+                padding:unset;
+            }
+        }
+        .chart-container {
+            max-width:400px;
+        }
     </style>
 </head>
 <body>
+    <form id="form1" runat="server">
+        <!-- Header with Username and Logout -->
+        <div class="header">
+            <h2>Budget Buddy</h2>
+            <div class="user-logout-con">
+                <h2>Welcome, <asp:Literal ID="litUsername" runat="server"></asp:Literal></h2>
+                <asp:LinkButton ID="btnLogout" runat="server" Text="Logout" OnClick="btnLogout_Click"
+    CssClass="logout-button" CausesValidation="false"/>
 
-    <!-- Header with username on the top-right -->
-    <div class="header">
-        <h2>Budget Buddy</h2>
-        <h2>Welcome, [Username]</h2>
-    </div>
-
-    <!-- Main Dashboard Section -->
-    <div class="dashboard-container">
-        <!-- Left Section: Expense Tracker Form -->
-        <div class="left-section">
-            <h3>Expense Tracker</h3>
-
-            <!-- Expense Input Form -->
-            <div class="form-group">
-                <label for="txtCategory">Category:</label>
-                <input type="text" id="txtCategory" placeholder="Enter Category (e.g., Food, Rent)" required />
             </div>
-
-            <div class="form-group">
-                <label for="txtAmount">Amount:</label>
-                <input type="number" id="txtAmount" placeholder="Enter Amount" required />
-            </div>
-
-            <div class="form-group">
-                <label for="txtDescription">Description:</label>
-                <input type="text" id="txtDescription" placeholder="Enter Description (optional)" />
-            </div>
-
-            <div class="form-group">
-                <label for="txtDate">Date:</label>
-                <input type="date" id="txtDate" required />
-            </div>
-
-            <button type="submit">Add Expense</button>
         </div>
 
-        <!-- Right Section: Pie Chart -->
-        <div class="right-section">
-            <h3>Expense Overview</h3>
-            <canvas id="expenseChart"></canvas>
-        </div>
-    </div>
+        <!-- Main Dashboard Section -->
+        <div class="dashboard-container">
+            <!-- Left Section: Expense Tracker -->
+            <div class="left-section">
+                <h3>Expense Tracker</h3>
 
-    <!-- Footer (Optional) -->
-    <div class="footer">
-        <p>&copy; 2025 Budget Buddy. All Rights Reserved.</p>
+                <!-- Expense Input Form -->
+                <div class="form-group">
+                    <label for="txtCategory">Category:</label>
+                    <asp:TextBox ID="txtCategory" runat="server" CssClass="input-field" placeholder="Enter Category" required ></asp:TextBox>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtAmount">Amount:</label>
+                    <asp:TextBox ID="txtAmount" runat="server" CssClass="input-field" TextMode="Number" required ValidationGroup="ExpenseForm"></asp:TextBox>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtDescription">Description:</label>
+                    <asp:TextBox ID="txtDescription" runat="server" CssClass="input-field" placeholder="Enter Description"></asp:TextBox>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtDate">Date:</label>
+                    <asp:TextBox ID="txtDate" runat="server" CssClass="input-field" TextMode="Date" required ></asp:TextBox>
+                </div>
+
+                <asp:Button ID="btnAddExpense" runat="server" Text="Add Expense" CssClass="btn-add" OnClick="btnAddExpense_Click"/>
+            </div>
+
+            <!-- Right Section: Pie Chart -->
+            <div class="right-section">
+    <h3>Expense Overview</h3>
+    <div class="chart-container">
+        <canvas id="expenseChart"></canvas>
     </div>
+</div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2025 Budget Buddy. All Rights Reserved.</p>
+        </div>
+    </form>
 
     <script>
-        // Example Data for Pie Chart
         var ctx = document.getElementById('expenseChart').getContext('2d');
         var expenseChart = new Chart(ctx, {
             type: 'pie',
@@ -179,10 +261,13 @@
                 }]
             },
             options: {
-                responsive: true
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: 10
+                }
             }
         });
-    </script>
-
+</script>
 </body>
 </html>

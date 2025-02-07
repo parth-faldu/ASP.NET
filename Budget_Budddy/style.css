@@ -12,7 +12,7 @@ body {
     transition: background-color 0.3s;
 }
 .money-bg {
-    background: url('money-bg.jpeg');
+    background: url('./images/money-bg.jpeg');
     background-repeat: no-repeat;
     background-size: 100% 100%;
 }
@@ -230,3 +230,16 @@ input[type="text"], input[type="password"], input[type="email"] {
     border-radius:10px;
     border:none;
 }
+.logout-button {
+    background-color: #ff4081;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .logout-button:hover {
+        background-color: #e20073;
+    }
