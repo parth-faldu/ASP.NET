@@ -26,11 +26,11 @@ namespace Budget_Budddy
                 try
                 {
                     conn.Open();
-                    ClientScript.RegisterStartupScript(this.GetType(), "consoleLog", "console.log('✅ Connected to Database!');", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "consoleLog", "console.log('Connected to Database!');", true);
                 }
                 catch (Exception ex)
                 {
-                    lblError.Text = "❌ Database Connection Error: " + ex.Message;
+                    lblError.Text = "Database Connection Error: " + ex.Message;
                 }
             }
         }
@@ -39,6 +39,8 @@ namespace Budget_Budddy
         {
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
+            // Determine if admin login is selected using rbAdmin.Checked
+            bool isAdmin = rbAdmin.Checked;
 
             string connStr = ConfigurationManager.ConnectionStrings["BudgetBuddy"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -47,44 +49,78 @@ namespace Budget_Budddy
                 {
                     conn.Open();
 
-                    // Fetch stored hashed password from DB
-                    string query = "SELECT password_hash FROM users WHERE username = @username";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    if (!isAdmin)
                     {
-                        cmd.Parameters.AddWithValue("@username", username);
-                        object storedHash = cmd.ExecuteScalar();
-
-                        if (storedHash != null)
+                        // Regular user login from the "users" table
+                        string query = "SELECT password_hash FROM users WHERE username = @username";
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
-                            string storedPasswordHash = storedHash.ToString();
+                            cmd.Parameters.AddWithValue("@username", username);
+                            object storedHash = cmd.ExecuteScalar();
 
-                            // Hash the entered password
-                            string enteredPasswordHash = HashPassword(password);
-
-                            if (storedPasswordHash == enteredPasswordHash)
+                            if (storedHash != null)
                             {
-                                Session["username"] = username;
-                                Response.Redirect("pages/dashboard.aspx");
+                                string storedPasswordHash = storedHash.ToString();
+                                string enteredPasswordHash = HashPassword(password);
+
+                                if (storedPasswordHash == enteredPasswordHash)
+                                {
+                                    Session["username"] = username;
+                                    // Redirect regular user to the dashboard page
+                                    Response.Redirect("pages/dashboard.aspx");
+                                }
+                                else
+                                {
+                                    lblError.Text = "Invalid username or password.";
+                                }
                             }
                             else
                             {
-                                lblError.Text = "❌ Invalid username or password.";
+                                lblError.Text = "Invalid username or password.";
                             }
                         }
-                        else
+                    }
+                    else
+                    {
+                        // Admin login from the "admins" table
+                        string query = "SELECT password_hash FROM admins WHERE username = @username";
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
-                            lblError.Text = "❌ Invalid username or password.";
+                            cmd.Parameters.AddWithValue("@username", username);
+                            object storedHash = cmd.ExecuteScalar();
+
+                            if (storedHash != null)
+                            {
+                                string storedPasswordHash = storedHash.ToString();
+                                string enteredPasswordHash = HashPassword(password);
+
+                                if (storedPasswordHash == enteredPasswordHash)
+                                {
+                                    Session["admin"] = username;
+                                    // Redirect admin user to the admin dashboard page.
+                                    // Adjust the path if your admin dashboard file is located elsewhere.
+                                    Response.Redirect("pages/AdminDashboard.aspx");
+                                }
+                                else
+                                {
+                                    lblError.Text = "Invalid admin username or password.";
+                                }
+                            }
+                            else
+                            {
+                                lblError.Text = "Invalid admin username or password.";
+                            }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    lblError.Text = "❌ Error: " + ex.Message;
+                    lblError.Text = "Error: " + ex.Message;
                 }
             }
         }
 
-        // 🔹 Hashing Function (Must Match Your SignUp Hashing)
+        // Hashing Function (must match your SignUp hashing method)
         private string HashPassword(string password)
         {
             using (SHA256 sha256 = SHA256.Create())

@@ -1,0 +1,539 @@
+﻿/* Global Box-Sizing Reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* ----------------------------------------------------------------------
+   dashboard.css - Stylish Styles for the Dashboard Page
+---------------------------------------------------------------------- */
+
+/* CSS Variables */
+:root {
+    --color-bg: #121212; /* Main background color */
+    --color-text: #fff; /* General text color */
+    --color-container: #1e1e1e; /* Container background */
+    --color-input-bg: #333; /* Input field background */
+    --color-border: #444; /* Border color */
+    --color-accent: #ff4081; /* Accent color for buttons, links */
+    --color-primary: #005cff; /* Primary color for headings and focus */
+    --color-hover: #e20073; /* Hover color for buttons */
+    --color-footer: #aaa; /* Footer text color */
+    --shadow-light: rgba(0, 0, 0, 0.2); /* Light shadow for containers */
+    --font-family: 'Poppins', sans-serif;
+    --transition-speed: 0.3s; /* Transition duration */
+    --container-gradient: linear-gradient(135deg, #1e1e1e, #2c2c2c);
+}
+
+/* Global Styles */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    overflow-x: hidden; /* Prevent horizontal scroll on the body */
+}
+
+/* Header Section */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: var(--color-container);
+    width: 100%;
+    max-width: 100%;
+    overflow: visible; /* Allow dropdown to be visible outside header */
+    box-shadow: 0 2px 4px var(--shadow-light);
+    z-index: 10;
+}
+
+    .header h2 {
+        color: var(--color-accent);
+        margin: 0;
+        padding: 0 20px;
+        font-size: 1.8em;
+    }
+
+/* Logout Button */
+.logout-button {
+    background-color: var(--color-accent);
+    color: var(--color-text);
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    transition: background-color var(--transition-speed);
+}
+
+    .logout-button:hover {
+        background-color: var(--color-hover);
+    }
+
+/* Dashboard Layout */
+.dashboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 30px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Expense Tracker (Left Section) */
+.left-section {
+    background: var(--container-gradient);
+    padding: 30px;
+    border-radius: 8px;
+    width: 48%;
+    box-shadow: 0 4px 15px var(--shadow-light);
+    border: 1px solid var(--color-border);
+}
+
+    .left-section h3 {
+        color: var(--color-primary);
+        margin-bottom: 20px;
+        font-size: 1.6em;
+    }
+
+/* Form Fields */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.input-field {
+    width: 95%;
+    padding: 12px;
+    margin: 8px 0;
+    background-color: var(--color-input-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    color: var(--color-text);
+    font-size: 16px;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+    .input-field:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 8px var(--color-primary);
+    }
+
+/* Add Expense Button */
+.btn-add {
+    background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+    color: var(--color-text);
+    padding: 14px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 15px;
+    transition: transform var(--transition-speed), background var(--transition-speed);
+}
+
+    .btn-add:hover {
+        background-color: var(--color-hover);
+        transform: scale(1.04);
+    }
+
+/* Export Buttons */
+.expense-btn {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background var(--transition-speed), transform var(--transition-speed);
+}
+
+    .expense-btn:hover {
+        background-color: var(--color-hover);
+        transform: scale(1.05);
+    }
+
+/* Expense Chart (Right Section) */
+/* Using flex centering to allow dynamic height/width adjustments */
+.right-section {
+    background: var(--container-gradient);
+    padding: 30px;
+    border-radius: 8px;
+    width: 37%;
+    min-height: 460px;
+    box-shadow: 0 4px 15px var(--shadow-light);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+    .right-section h3 {
+        color: var(--color-primary);
+        margin-bottom: 20px;
+        font-size: 1.6em;
+        margin-top: unset;
+    }
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
+    .chart-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+    }
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: var(--color-footer);
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+/* Table Container & GridView */
+.table-container {
+    position: relative;
+    background: var(--container-gradient);
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    margin: 20px auto;
+    overflow: hidden;
+    box-shadow: 0 4px 15px var(--shadow-light);
+    border: 1px solid var(--color-border);
+}
+
+    .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 12px 15px;
+        text-align: left;
+    }
+
+    .table-container th {
+        background-color: #333;
+        color: var(--color-accent);
+        font-weight: 600;
+        border-bottom: 2px solid var(--color-border);
+    }
+
+    .table-container td {
+        background-color: var(--color-container);
+        color: var(--color-text);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .table-container tr:hover td {
+        background-color: #333;
+    }
+
+    .table-container tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table-container tr td:last-child {
+        padding: 30px 8px 30px 8px;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    .table-container tr td:last-child {
+        & .action-btn{
+            padding: 5px 10px;
+            color: var(--color-text);
+        }
+        & a:first-child {
+                background-color: green;
+            }
+        }
+        & a:last-child{
+                background-color: red;
+            }    
+        }
+    }
+
+/* Specific GridView Button Colors */
+#gvExpenses_lbEdit_0,
+#gvExpenses_lbUpdate_0 {
+    background-color: green;
+}
+
+
+/* GridView CommandField Links */
+.table-container .gvCommandField a {
+    color: var(--color-accent);
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid var(--color-accent);
+    border-radius: 3px;
+    margin-right: 5px;
+}
+
+    .table-container .gvCommandField a:hover {
+        background-color: var(--color-accent);
+        color: var(--color-text);
+    }
+
+/* Action Buttons */
+.action-btn {
+    display: inline-block;
+    background: transparent;
+    border: none;
+    color: var(--color-accent);
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 2px;
+    font-size: 16px;
+    transition: color var(--transition-speed) ease;
+}
+
+    .action-btn:hover {
+        color: #e20073;
+    }
+
+/* Update & Cancel Buttons */
+.update-btn {
+    color: #4CAF50;
+}
+
+    .update-btn:hover {
+        color: #43a047;
+    }
+
+.cancel-btn {
+    color: #f44336;
+}
+
+    .cancel-btn:hover {
+        color: #e53935;
+    }
+
+/* Table Input Fields */
+table .input-field {
+    width: 95%;
+    padding: 12px;
+    margin: 8px 0;
+    background-color: var(--color-input-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    color: var(--color-text);
+    font-size: 16px;
+    transition: border-color var(--transition-speed);
+}
+
+    table .input-field:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+/* Dropdown Menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.settings-button {
+    color: var(--color-accent);
+    padding: 10px 16px;
+    font-size: 30px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%; /* Position dropdown below the button */
+    right: 0;
+    left: auto;
+    padding-left: 20px;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    z-index: 100; /* Ensure dropdown appears on top */
+}
+
+    .dropdown-content .dropdown-item {
+        color: black;
+        padding: 12px 0;
+        text-decoration: none;
+        display: block;
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+    }
+
+        .dropdown-content .dropdown-item:hover {
+            background-color: #f1f1f1;
+        }
+
+/* User Settings */
+.user-settings-con {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Export Buttons */
+.export-buttons {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+/* Utility Classes */
+#Buttons {
+    display: flex;
+    gap: 10px;
+}
+
+    #Buttons input {
+        width: 100%;
+    }
+
+/* Media Queries for Responsiveness */
+
+/* When viewport is 992px or less */
+@media screen and (max-width: 992px) {
+    .dashboard-container {
+        gap: 30px;
+        padding: 20px;
+    }
+
+    .left-section, .right-section {
+        width: 100%;
+    }
+
+    .left-section {
+        margin-bottom: 30px;
+    }
+}
+
+/* When viewport is 768px or less */
+@media screen and (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        padding: 15px;
+        gap: 20px;
+    }
+
+    .left-section, .right-section {
+        width: 100%;
+    }
+
+    .header h2 {
+        font-size: 1.5em;
+        padding: 0 10px;
+    }
+
+    .expense-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .chart-container {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+}
+
+/* When viewport is 480px or less */
+@media screen and (max-width: 480px) {
+    .header {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+        .header h2 {
+            padding: 0;
+            font-size: 1.3em;
+        }
+
+    .user-settings-con h2 {
+        font-size: 1em;
+    }
+
+    /* General input field styling */
+    .input-field {
+        width: 95%;
+        padding: 12px;
+        margin: 8px 0;
+        background-color: var(--color-input-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 5px;
+        color: var(--color-text);
+        font-size: 16px;
+        transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    }
+
+        /* Focus state for all input fields */
+        .input-field:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 8px var(--color-primary);
+        }
+
+    /* Optional additional styling for the amount field */
+    .amount-input {
+        /* For example, you might want to ensure the width is exactly as desired or add extra padding */
+        max-width: 300px;
+    }
+
+
+    .btn-add, .expense-btn {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+}
+/* For Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}

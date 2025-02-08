@@ -1,0 +1,53 @@
+﻿/* admin.css */
+
+.admin-container {
+    background: linear-gradient(135deg, #1e1e1e, #2c2c2c);
+    padding: 40px;
+    border-radius: 10px;
+    max-width: 800px;
+    margin: 20px auto;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+    .admin-container h2,
+    .admin-container h3 {
+        color: #005cff;
+        text-align: center;
+    }
+
+.add-user-panel {
+    margin-top: 20px;
+    text-align: center;
+}
+
+    .add-user-panel input,
+    .add-user-panel button {
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        border: 1px solid #444;
+        background-color: #333;
+        color: #fff;
+    }
+
+    .add-user-panel button {
+        background-color: #005cff;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .add-user-panel button:hover {
+            background-color: #000;
+        }
+.table-container tr td:last-child {
+    & a:first-child
+
+{
+    background-color: #800000;
+    text-decoration: none;
+    padding: 8px;
+    color: white;
+}
+}

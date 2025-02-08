@@ -1,0 +1,170 @@
+﻿/* ----------------------------------------------------------------------
+   signup.css - Stylish Styles for the Sign Up Page
+---------------------------------------------------------------------- */
+
+/* CSS Variables */
+:root {
+    --color-bg: #121212; /* Main background color */
+    --color-text: #fff; /* General text color */
+    --color-container: #1e1e1e; /* Container background color */
+    --color-input-bg: #333; /* Input field background */
+    --color-border: #444; /* Border color */
+    --color-primary: #005cff; /* Primary accent color */
+    --color-footer: #aaa; /* Footer text color */
+    --color-hover: #000; /* Button hover background */
+    --shadow-light: rgba(0, 0, 0, 0.2); /* Light shadow for containers */
+    --transition-speed: 0.3s; /* Transition duration */
+    --container-gradient: linear-gradient(135deg, #1e1e1e, #2c2c2c);
+}
+
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: background-color var(--transition-speed);
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('../images/money-bg.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Fade-in animation for container */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Typography */
+h2 {
+    margin: 0;
+}
+
+/* Sign Up Container (using .login-container class) */
+.login-container {
+    background: var(--container-gradient);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 4px 15px var(--shadow-light);
+    border: 1px solid var(--color-border);
+    animation: fadeIn 0.5s ease-out;
+}
+
+    .login-container h2 {
+        color: var(--color-primary);
+        margin-bottom: 20px;
+        font-size: 1.8em;
+    }
+
+/* Toggle Account Type Styles */
+.login-type-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 20px;
+    background-color: var(--color-input-bg);
+    border-radius: 5px;
+    overflow: hidden;
+    max-width: 300px;
+}
+
+.toggle-option {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    background-color: var(--color-container);
+    color: var(--color-text);
+    transition: background-color var(--transition-speed);
+}
+
+    .toggle-option:hover {
+        background-color: var(--color-primary);
+    }
+
+    .toggle-option.active {
+        background-color: var(--color-primary);
+    }
+
+/* Form Fields */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.input-field {
+    width: 95%;
+    padding: 12px;
+    margin: 8px 0;
+    background-color: var(--color-input-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    color: var(--color-text);
+    font-size: 16px;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+    .input-field:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 8px var(--color-primary);
+    }
+
+/* Sign Up Button */
+.btn-login {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+    .btn-login:hover {
+        background-color: var(--color-hover);
+        transform: scale(1.03);
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+/* Error Label */
+.error-label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* Footer Text */
+.footer-text {
+    text-align: center;
+    font-size: 14px;
+    color: var(--color-footer);
+    margin-top: 20px;
+}
+
+    .footer-text a {
+        color: var(--color-text);
+        text-decoration: none;
+        transition: text-decoration var(--transition-speed);
+    }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }

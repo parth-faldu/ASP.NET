@@ -1,0 +1,124 @@
+﻿/* ----------------------------------------------------------------------
+   updateprofile.css - Styles for the Update Profile Page
+---------------------------------------------------------------------- */
+
+/* CSS Variables */
+:root {
+    --color-bg: #121212; /* Main background color */
+    --color-text: #fff; /* General text color */
+    --color-container: #1e1e1e; /* Container background */
+    --color-input-bg: #333; /* Input field background */
+    --color-border: #444; /* Border color */
+    --color-accent: #ff4081; /* Accent color for headings, buttons, links */
+    --color-hover: #e20073; /* Hover color for buttons */
+    --shadow-light: 0 0 10px rgba(0, 0, 0, 0.3); /* Container shadow */
+    --font-family: 'Poppins', sans-serif;
+}
+
+/* Global Styles */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+/* Container for the Update Profile Form */
+form#form1 {
+    max-width: 400px;
+    margin: 50px auto;
+    background-color: var(--color-container);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+}
+
+    /* Header */
+    form#form1 h2 {
+        text-align: center;
+        color: var(--color-accent);
+        margin-bottom: 20px;
+    }
+
+    /* Message Label (errors or success messages) */
+    form#form1 .aspNetDisabled,
+    form#form1 .error,
+    form#form1 .success,
+    #lblMessage {
+        text-align: center;
+        margin-bottom: 15px;
+        font-weight: 500;
+    }
+
+    /* Label Styles */
+    form#form1 label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    /* TextBox Styles */
+    form#form1 input[type="text"],
+    form#form1 input[type="password"],
+    form#form1 input[type="email"] {
+        width: 95%;
+        padding: 10px;
+        margin-bottom: 15px;
+        background-color: var(--color-input-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 5px;
+        color: var(--color-text);
+    }
+
+        /* Placeholder Colors */
+        form#form1 input[type="text"]::placeholder,
+        form#form1 input[type="password"]::placeholder,
+        form#form1 input[type="email"]::placeholder {
+            color: #aaa;
+        }
+
+    /* Button Styles */
+    form#form1 input[type="submit"],
+    form#form1 button,
+    form#form1 .btn,
+    form#form1 input[type="button"] {
+        background-color: var(--color-accent);
+        color: var(--color-text);
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+        form#form1 input[type="submit"]:hover,
+        form#form1 button:hover,
+        form#form1 .btn:hover,
+        form#form1 input[type="button"]:hover {
+            background-color: var(--color-hover);
+        }
+
+    /* Back to Dashboard Link */
+    form#form1 .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        font-size: 16px;
+        color: var(--color-accent);
+        text-decoration: none;
+    }
+
+        form#form1 .back-link:hover {
+            text-decoration: underline;
+        }
+
+/* Responsive Adjustments */
+@media screen and (max-width: 480px) {
+    form#form1 {
+        margin: 20px;
+        padding: 20px;
+    }
+}
