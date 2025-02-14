@@ -11,14 +11,6 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
-using System.Web.UI.WebControls;
-
-// Added namespaces for AI API integration
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Budget_Budddy.pages
 {
@@ -268,72 +260,49 @@ namespace Budget_Budddy.pages
 
         protected void gvExpenses_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
-            // Get the ExpenseID from the DataKey.
             int expenseID = Convert.ToInt32(gvExpenses.DataKeys[e.RowIndex].Value);
             var row = gvExpenses.Rows[e.RowIndex];
 
             // Retrieve updated values from the GridView cells.
-            string category = ((TextBox)row.Cells[1].Controls[0]).Text;
-            string amountText = ((TextBox)row.Cells[2].Controls[0]).Text;
-            string description = ((TextBox)row.Cells[3].Controls[0]).Text;
-            string dateText = ((TextBox)row.Cells[4].Controls[0]).Text;
+            string category = ((System.Web.UI.WebControls.TextBox)(row.Cells[1].Controls[0])).Text;
+            string amountText = ((System.Web.UI.WebControls.TextBox)(row.Cells[2].Controls[0])).Text;
+            string description = ((System.Web.UI.WebControls.TextBox)(row.Cells[3].Controls[0])).Text;
+            string dateText = ((System.Web.UI.WebControls.TextBox)(row.Cells[4].Controls[0])).Text;
 
-            // Declare variables explicitly for compatibility.
-            decimal amount;
-            DateTime expenseDate;
-
-            // Validate the input values.
-            if (!decimal.TryParse(amountText, out amount) || !DateTime.TryParse(dateText, out expenseDate))
+            if (!decimal.TryParse(amountText, out decimal amount) || !DateTime.TryParse(dateText, out DateTime expenseDate))
             {
-                // Show alert if input is invalid.
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Invalid input. Please check the amount and date.');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Invalid input.');", true);
                 return;
             }
 
-            // Try to execute the update query.
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-
                     string query = "UPDATE Expenses SET Category = @Category, Amount = @Amount, Description = @Description, ExpenseDate = @ExpenseDate WHERE ID = @ExpenseID";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        // Add parameters to the command to prevent SQL injection.
                         cmd.Parameters.AddWithValue("@Category", category);
                         cmd.Parameters.AddWithValue("@Amount", amount);
                         cmd.Parameters.AddWithValue("@Description", description);
                         cmd.Parameters.AddWithValue("@ExpenseDate", expenseDate);
                         cmd.Parameters.AddWithValue("@ExpenseID", expenseID);
-
-                        // Execute the query.
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            gvExpenses.EditIndex = -1; // Exit Edit mode.
-                            BindExpensesGrid(); // Re-bind the GridView to show updated data.
-                            LoadExpenses(); // Update the chart with the new data.
-
-                            // Show success message.
-                            ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Expense updated successfully.');", true);
-                        }
-                        else
-                        {
-                            // Handle the case where no rows were updated.
-                            ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('No rows updated. Please try again.');", true);
-                        }
+                        cmd.ExecuteNonQuery();
                     }
                 }
+                gvExpenses.EditIndex = -1;
+                BindExpensesGrid();
+                LoadExpenses(); // Update chart data.
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Expense updated successfully.');", true);
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that occur during the database operation.
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", $"alert('Error updating expense: {ex.Message}');", true);
             }
         }
 
-        protected void gvExpenses_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
+        protected void gvExpenses_RowCancelingEdit(object sender, System.Web.UI.WebControls.GridViewCancelEditEventArgs e)
         {
             gvExpenses.EditIndex = -1;
             BindExpensesGrid();
