@@ -13,6 +13,12 @@ using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
 using System.Web.UI.WebControls;
 
+// Added namespaces for AI API integration
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Budget_Budddy.pages
 {
@@ -20,23 +26,44 @@ namespace Budget_Budddy.pages
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["BudgetBuddy"].ConnectionString;
 
-        protected void Page_Load(object sender, EventArgs e)
+        /*private string TruncateText(string text, int maxLength)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text;
+                return text.Length > maxLength ? text.Substring(0, maxLength) + "..." : text;
+        }*/
+
+        protected async void Page_Load(object sender, EventArgs e)
         {
             if (Session["username"] == null)
-                Response.Redirect("../index.aspx");
+            {
+                Response.Redirect("../index.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
             else
             {
                 litUsername.Text = Session["username"].ToString();
                 if (!IsPostBack)
                 {
-                    litUsername.Text = Session["Username"] != null ? Session["Username"].ToString() : "User";
-                    // Disable HTML5 validation for export buttons.
-                    btnExportPDF.Attributes.Add("formnovalidate", "formnovalidate");
-                    btnExportExcel.Attributes.Add("formnovalidate", "formnovalidate");
+                    BindExpensesGrid();
+                    LoadExpenses();
 
-                    TestDatabaseConnection();
-                    LoadExpenses();    // Load chart data
-                    BindExpensesGrid(); // Bind GridView data
+                    int userID = GetUserID(Session["username"].ToString());
+                    decimal totalExpenses = GetTotalExpenses(userID);
+
+                    if (totalExpenses == 0)
+                    {
+                        budgetSuggestionsLiteral.Text = "No expenses found. Please add some expenses to see a budget suggestion.";
+                    }
+                    else
+                    {
+                        Dictionary<string, decimal> categoryTotals = GetCategoryTotals(userID);
+                        string rawSuggestion = await GetBudgetSuggestionGeminiAsync(totalExpenses, categoryTotals);
+                        //rawSuggestion = TruncateText(rawSuggestion, 400); // if needed
+                        string formattedSuggestion = FormatSuggestionUI(rawSuggestion);
+                        budgetSuggestionsLiteral.Text = formattedSuggestion;
+                    }
                 }
             }
         }
@@ -71,7 +98,7 @@ namespace Budget_Budddy.pages
             try
             {
                 int userID = GetUserID(Session["username"].ToString());
-                Dictionary<string, object> expenseData = new Dictionary<string, object>();
+                List<dynamic> expenseData = new List<dynamic>();
 
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
@@ -84,12 +111,14 @@ namespace Budget_Budddy.pages
                         {
                             while (reader.Read())
                             {
-                                string category = reader["Category"].ToString();
-                                decimal amount = Convert.ToDecimal(reader["Amount"]);
-                                string description = reader["Description"].ToString();
-                                string date = Convert.ToDateTime(reader["ExpenseDate"]).ToString("yyyy-MM-dd");
-                                int expenseID = Convert.ToInt32(reader["ID"]);
-                                expenseData[category] = new { id = expenseID, amount = amount, description = description, date = date };
+                                expenseData.Add(new
+                                {
+                                    id = Convert.ToInt32(reader["ID"]),
+                                    category = reader["Category"].ToString(),
+                                    amount = Convert.ToDecimal(reader["Amount"]),
+                                    description = reader["Description"].ToString(),
+                                    date = Convert.ToDateTime(reader["ExpenseDate"]).ToString("yyyy-MM-dd")
+                                });
                             }
                         }
                     }
@@ -122,6 +151,27 @@ namespace Budget_Budddy.pages
                 }
             }
             return userID;
+        }
+
+        // Calculate the total expenses for a given user.
+        private decimal GetTotalExpenses(int userID)
+        {
+            decimal total = 0;
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT ISNULL(SUM(Amount), 0) FROM Expenses WHERE UserID = @UserID";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserID", userID);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        total = Convert.ToDecimal(result);
+                    }
+                }
+            }
+            return total;
         }
 
         // Add expense with duplicate-check and PRG pattern.
@@ -210,13 +260,13 @@ namespace Budget_Budddy.pages
             }
         }
 
-        protected void gvExpenses_RowEditing(object sender, System.Web.UI.WebControls.GridViewEditEventArgs e)
+        protected void gvExpenses_RowEditing(object sender, GridViewEditEventArgs e)
         {
             gvExpenses.EditIndex = e.NewEditIndex;
             BindExpensesGrid();
         }
 
-        protected void gvExpenses_RowUpdating(object sender, System.Web.UI.WebControls.GridViewUpdateEventArgs e)
+        protected void gvExpenses_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             // Get the ExpenseID from the DataKey.
             int expenseID = Convert.ToInt32(gvExpenses.DataKeys[e.RowIndex].Value);
@@ -228,7 +278,7 @@ namespace Budget_Budddy.pages
             string description = ((TextBox)row.Cells[3].Controls[0]).Text;
             string dateText = ((TextBox)row.Cells[4].Controls[0]).Text;
 
-            // Declare variables explicitly for compatibility with C# 6.0.
+            // Declare variables explicitly for compatibility.
             decimal amount;
             DateTime expenseDate;
 
@@ -283,15 +333,13 @@ namespace Budget_Budddy.pages
             }
         }
 
-
-
-        protected void gvExpenses_RowCancelingEdit(object sender, System.Web.UI.WebControls.GridViewCancelEditEventArgs e)
+        protected void gvExpenses_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
         {
             gvExpenses.EditIndex = -1;
             BindExpensesGrid();
         }
 
-        protected void gvExpenses_RowDeleting(object sender, System.Web.UI.WebControls.GridViewDeleteEventArgs e)
+        protected void gvExpenses_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
             int expenseID = Convert.ToInt32(gvExpenses.DataKeys[e.RowIndex].Value);
             try
@@ -308,7 +356,7 @@ namespace Budget_Budddy.pages
                 }
                 BindExpensesGrid();
                 LoadExpenses(); // Update chart data.
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Expense deleted successfully.');", true);
+                Response.Redirect(Request.RawUrl);
             }
             catch (Exception ex)
             {
@@ -569,5 +617,162 @@ namespace Budget_Budddy.pages
                 Response.End();
             }
         }
+        private Dictionary<string, decimal> GetCategoryTotals(int userID)
+        {
+            var categoryTotals = new Dictionary<string, decimal>();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT Category, SUM(Amount) as Total FROM Expenses WHERE UserID = @UserID GROUP BY Category";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserID", userID);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string category = reader["Category"].ToString();
+                            decimal total = Convert.ToDecimal(reader["Total"]);
+                            categoryTotals[category] = total;
+                        }
+                    }
+                }
+            }
+            return categoryTotals;
+        }
+        private string FormatSuggestionUI(string rawSuggestion)
+        {
+            // Replace markers for headings with HTML headings.
+            string formatted = rawSuggestion;
+            formatted = formatted.Replace("**Area of Overspending:**", "</p><h3 style='color:#007ACC;'>Area of Overspending</h3><p>");
+            formatted = formatted.Replace("**Actionable Recommendations:**", "</p><h3 style='color:#007ACC;'>Actionable Recommendations</h3>");
+
+            // Convert markdown bold markers (**text**) into <strong> tags.
+            formatted = System.Text.RegularExpressions.Regex.Replace(formatted, @"\*\*(.+?)\*\*", "<strong>$1</strong>");
+
+            // Now, extract and rebuild the recommendations as an ordered list.
+            // We assume that the recommendations start immediately after the closing </h3> of the "Actionable Recommendations" heading.
+            string recHeading = "</h3>";
+            int recIndex = formatted.IndexOf(recHeading);
+            if (recIndex != -1)
+            {
+                // The recommendations text starts after the heading.
+                int start = recIndex + recHeading.Length;
+                string recText = formatted.Substring(start).Trim();
+
+                // Use regex to capture the recommendation items.
+                // This pattern matches a number followed by a period and whitespace, then captures the text until the next numbered item or end-of-string.
+                var matches = System.Text.RegularExpressions.Regex.Matches(recText, @"\d+\.\s+(.*?)(?=\d+\.\s+|$)", System.Text.RegularExpressions.RegexOptions.Singleline);
+
+                if (matches.Count > 0)
+                {
+                    StringBuilder listBuilder = new StringBuilder("<ol>");
+                    foreach (System.Text.RegularExpressions.Match match in matches)
+                    {
+                        // match.Groups[1] contains the text after the number and period.
+                        string itemText = match.Groups[1].Value.Trim();
+                        listBuilder.Append("<li>" + itemText + "</li>");
+                    }
+                    listBuilder.Append("</ol>");
+
+                    // Replace the original recommendations text with the formatted ordered list.
+                    formatted = formatted.Substring(0, start) + listBuilder.ToString();
+                }
+            }
+
+            // Wrap the whole output in a div with basic styling.
+            formatted = "<div style='font-family:Arial, sans-serif; color:#cecece; line-height:1.5;'>" + formatted + "</div>";
+
+            return formatted;
+        }
+
+        // -------------------------
+        // AI API Integration for Budget Suggestions
+        // -------------------------
+        /// <summary>
+        /// Calls the AI API (OpenAI in this example) to generate a budget suggestion.
+        /// </summary>
+        /// <param name="availableBudget">The total available budget.</param>
+        /// <param name="totalExpenses">The sum of all recorded expenses.</param>
+        /// <returns>A string containing the suggestion.</returns>
+        private async Task<string> GetBudgetSuggestionGeminiAsync(decimal totalExpenses, Dictionary<string, decimal> categoryTotals)
+        {
+            // Build a summary string for category spending.
+            var categorySummary = new StringBuilder();
+            foreach (var entry in categoryTotals)
+            {
+                // Format each category and its total (e.g., "Groceries: $150.00").
+                categorySummary.Append($"{entry.Key}: {entry.Value:C}, ");
+            }
+            if (categorySummary.Length > 2)
+            {
+                categorySummary.Length -= 2; // Remove trailing comma and space.
+            }
+
+            // Construct the prompt solely based on the user's expense data.
+            string prompt = $"I have been tracking my expenses meticulously. " +
+                $"I've spent a total of {totalExpenses:C}. " +
+                $"Here is the breakdown of my spending by category: {categorySummary}. " +
+                "Based solely on this data, please provide a concise (only under 400 words) and actionable recommendation " +
+                "to help optimize my spending habits. Highlight any areas of overspending and suggest steps to better manage my expenses.";
+
+            // Prepare the request payload.
+            var requestBody = new
+            {
+                contents = new[]
+                {
+            new { parts = new[] { new { text = prompt } } }
+        },
+            };
+
+            // Retrieve your Gemini API key from configuration.
+            string apiKey = ConfigurationManager.AppSettings["Gemini_API_Key"];
+            string endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await client.PostAsync(endpoint, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Debug.WriteLine("Gemini API response: " + responseString);
+                    dynamic result = JsonConvert.DeserializeObject(responseString);
+
+                    if (result != null && result.candidates != null && result.candidates.Count > 0)
+                    {
+                        var candidate = result.candidates[0];
+                        if (candidate.content != null &&
+                            candidate.content.parts != null &&
+                            candidate.content.parts.Count > 0 &&
+                            candidate.content.parts[0].text != null)
+                        {
+                            return candidate.content.parts[0].text.ToString().Trim();
+                        }
+                        else
+                        {
+                            return $"Candidate content structure is not as expected. Raw response: {responseString}";
+                        }
+                    }
+                    else
+                    {
+                        return $"No candidates found in API response. Raw response: {responseString}";
+                    }
+                }
+                else
+                {
+                    string errorDetails = await response.Content.ReadAsStringAsync();
+                    return $"Unable to generate a suggestion due to an error with the Gemini API. Status Code: {response.StatusCode}. Details: {errorDetails}";
+                }
+            }
+        }
+
+
+
+
     }
 }

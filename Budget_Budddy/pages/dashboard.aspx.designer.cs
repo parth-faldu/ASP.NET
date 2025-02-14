@@ -132,6 +132,15 @@ namespace Budget_Budddy.pages
         protected global::System.Web.UI.WebControls.HiddenField hiddenChartImage;
 
         /// <summary>
+        /// hiddenBudgetAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hiddenBudgetAmount;
+
+        /// <summary>
         /// btnExportPDF control.
         /// </summary>
         /// <remarks>
@@ -157,5 +166,14 @@ namespace Budget_Budddy.pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvExpenses;
+
+        /// <summary>
+        /// budgetSuggestionsLiteral control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal budgetSuggestionsLiteral;
     }
 }

@@ -1,17 +1,17 @@
 ﻿/* ----------------------------------------------------------------------
-   index.css - Stylish Login Page Styles
+   index.css - Modern & Responsive Login Page Styles
 ---------------------------------------------------------------------- */
 
 /* CSS Variables */
 :root {
     --color-bg: #121212; /* Main background color */
-    --color-text: #fff; /* General text color */
+    --color-text: #ffffff; /* General text color */
     --color-container: #1e1e1e; /* Container background color */
-    --color-input-bg: #333; /* Input field background */
-    --color-border: #444; /* Border color */
+    --color-input-bg: #333333; /* Input field background */
+    --color-border: #444444; /* Border color */
     --color-primary: #005cff; /* Primary accent (buttons, headings) */
-    --color-footer: #aaa; /* Footer text color */
-    --color-hover: #000; /* Button hover background */
+    --color-hover: #0045cc; /* Button hover background */
+    --color-footer: #aaaaaa; /* Footer text color */
     --shadow-light: rgba(0, 0, 0, 0.2); /* Light shadow */
     --transition-speed: 0.3s; /* Transition duration */
     --container-gradient: linear-gradient(135deg, #1e1e1e, #2c2c2c);
@@ -32,7 +32,7 @@ body {
     min-height: 100vh;
 }
 
-/* Fade-in animation for container */
+/* Fade-in Animation */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -45,11 +45,6 @@ body {
     }
 }
 
-/* Typography */
-h2 {
-    margin: 0;
-}
-
 /* Login Container */
 .login-container {
     background: var(--container-gradient);
@@ -57,7 +52,7 @@ h2 {
     border-radius: 10px;
     text-align: center;
     max-width: 400px;
-    width: 100%;
+    width: 90%;
     box-shadow: 0 4px 15px var(--shadow-light);
     border: 1px solid var(--color-border);
     animation: fadeIn 0.5s ease-out;
@@ -90,15 +85,13 @@ h2 {
     transition: background-color var(--transition-speed);
 }
 
+    /* When the associated radio button is checked, add an active class via JavaScript or CSS sibling selectors if possible */
+    .toggle-option.active,
     .toggle-option:hover {
         background-color: var(--color-primary);
     }
 
-    .toggle-option.active {
-        background-color: var(--color-primary);
-    }
-
-/* Form Fields */
+/* Form Groups */
 .form-group {
     margin-bottom: 20px;
 }
@@ -163,3 +156,19 @@ h2 {
         .footer-text a:hover {
             text-decoration: underline;
         }
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 20px;
+    }
+
+    .input-field, .btn-login {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .login-type-container {
+        max-width: 100%;
+    }
+}

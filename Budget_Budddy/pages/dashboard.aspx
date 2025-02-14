@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="dashboard.aspx.cs"
-    Inherits="Budget_Budddy.pages.dashboard" %>
+    Inherits="Budget_Budddy.pages.dashboard" Async="true"%>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head runat="server">
@@ -12,13 +12,14 @@
           integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
           crossorigin="anonymous"
           referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="../Styles/dashboard.css" />
+    <link rel="stylesheet" href="../Styles/dashboard.css?v=1.0" />
 
     <!-- Inline Script Block to Pass Server IDs as Global Variables -->
     <script type="text/javascript">
         var hiddenExpenseDataClientID = "<%= hiddenExpenseData.ClientID %>";
         var hiddenChartImageClientID = "<%= hiddenChartImage.ClientID %>";
         var btnSettingsClientID = "<%= btnSettings.ClientID %>";
+        var hiddenBudgetAmountClientID = "<%= hiddenBudgetAmount.ClientID %>"; // New hidden field for available budget
     </script>
 
     <!-- External JavaScript File -->
@@ -87,18 +88,17 @@
               required
               autocomplete="off" />
           </div>
-         <div class="form-group">
+          <div class="form-group">
             <label for="txtAmount">Amount:</label>
-                <asp:TextBox
-                    ID="txtAmount"
-                    runat="server"
-                    CssClass="input-field amount-input"
-                    TextMode="Number"
-                    placeholder="Enter Amount"
-                    required="required"
-                autocomplete="off" />
-        </div>
-
+            <asp:TextBox
+              ID="txtAmount"
+              runat="server"
+              CssClass="input-field amount-input"
+              TextMode="Number"
+              placeholder="Enter Amount"
+              required="required"
+              autocomplete="off" />
+          </div>
           <div class="form-group">
             <label for="txtDescription">Description:</label>
             <asp:TextBox
@@ -136,10 +136,13 @@
             <p id="chartMessage" style="display:none; color:#fff; text-align:center; padding-top: 180px;">Please add data</p>
           </div>
         </div>
-        <!-- Hidden fields for chart data -->
+
+        <!-- Hidden fields for chart data and available budget -->
         <asp:HiddenField ID="hiddenExpenseData" runat="server" />
         <asp:HiddenField ID="hiddenChartImage" runat="server" />
+        <asp:HiddenField ID="hiddenBudgetAmount" runat="server" /> <!-- New hidden field for user's available budget -->
       </div>
+
 
       <!-- Expenses Grid -->
       <div class="table-container">
@@ -269,6 +272,11 @@
         </asp:GridView>
       </div>
 
+     <!-- Budget Suggestions Section -->
+    <div class="suggestions-section">
+        <h3>Budget Suggestions</h3>
+        <asp:Literal ID="budgetSuggestionsLiteral" runat="server" Text="Loading suggestions..." Mode="PassThrough"></asp:Literal>
+    </div>
       <!-- Footer -->
       <div class="footer">
         <p>&copy; 2025 Budget Buddy. All Rights Reserved.</p>
