@@ -64,7 +64,23 @@ namespace Budget_Budddy.pages
                     {
                         conn.Open();
 
-                        // Build the update query dynamically.
+                        // **🔹 Step 1: Check if the new username already exists (excluding the current user)**
+                        string checkQuery = "SELECT COUNT(*) FROM users WHERE username = @NewUsername AND username <> @OldUsername";
+                        using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
+                        {
+                            checkCmd.Parameters.AddWithValue("@NewUsername", newUsername);
+                            checkCmd.Parameters.AddWithValue("@OldUsername", oldUsername);
+
+                            int existingUserCount = (int)checkCmd.ExecuteScalar();
+                            if (existingUserCount > 0)
+                            {
+                                lblMessage.ForeColor = System.Drawing.Color.Red;
+                                lblMessage.Text = "User already exists. Please choose a different username.";
+                                return;
+                            }
+                        }
+
+                        // **🔹 Step 2: Proceed with the update if no duplicate username exists**
                         string updateQuery = "UPDATE users SET username = @NewUsername, email = @Email, updated_at = GETDATE()";
                         if (!string.IsNullOrEmpty(newPassword))
                         {
@@ -80,7 +96,6 @@ namespace Budget_Budddy.pages
 
                             if (!string.IsNullOrEmpty(newPassword))
                             {
-                                // Hash the new password before storing it.
                                 cmd.Parameters.AddWithValue("@PasswordHash", HashPassword(newPassword));
                             }
 
@@ -90,8 +105,7 @@ namespace Budget_Budddy.pages
                             {
                                 lblMessage.ForeColor = System.Drawing.Color.Green;
                                 lblMessage.Text = "Profile updated successfully!";
-                                // Update session variable if username has changed.
-                                Session["username"] = newUsername;
+                                Session["username"] = newUsername; // Update session if username changes
                             }
                             else
                             {
@@ -106,12 +120,22 @@ namespace Budget_Budddy.pages
                     Response.Redirect("../index.aspx");
                 }
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                lblMessage.ForeColor = System.Drawing.Color.Red;
-                lblMessage.Text = "Error: " + ex.Message;
+                // **🔹 Step 3: Catch SQL Unique Constraint Violation (Error Code: 2627 or 2601)**
+                if (ex.Number == 2627 || ex.Number == 2601)
+                {
+                    lblMessage.ForeColor = System.Drawing.Color.Red;
+                    lblMessage.Text = "User already exists. Please choose a different username.";
+                }
+                else
+                {
+                    lblMessage.ForeColor = System.Drawing.Color.Red;
+                    lblMessage.Text = "Error: " + ex.Message;
+                }
             }
         }
+
 
         // Hashing function using SHA256
         private string HashPassword(string password)

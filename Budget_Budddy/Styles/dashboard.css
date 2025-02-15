@@ -165,6 +165,7 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background var(--transition-speed), transform var(--transition-speed);
+    text-decoration: none;
 }
 
     .expense-btn:hover {
@@ -414,6 +415,11 @@ table .input-field {
     position: absolute;
     top: 10px;
     right: 15px;
+
+    & a:last-child
+{
+    background-color: var(--color-primary);
+}
 }
 
 /* Utility Classes */
@@ -470,6 +476,38 @@ table .input-field {
         max-width: 100%;
         margin: 0 auto;
     }
+    .table-container div:nth-child(3) {
+        overflow-x:scroll;
+    }
+    .table-container div:nth-child(3) {
+        overflow-x: scroll;
+    }
+
+        /* Webkit Browsers (Chrome, Edge, Safari) */
+        .table-container div:nth-child(3)::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-container div:nth-child(3)::-webkit-scrollbar-track {
+            background: #1e1e1e; /* Dark background */
+            border-radius: 4px;
+        }
+
+        .table-container div:nth-child(3)::-webkit-scrollbar-thumb {
+            background: #555; /* Darker scrollbar handle */
+            border-radius: 4px;
+        }
+
+            .table-container div:nth-child(3)::-webkit-scrollbar-thumb:hover {
+                background: #777; /* Lighter on hover */
+            }
+
+    /* Firefox */
+    .table-container div:nth-child(3) {
+        scrollbar-color: #555 #1e1e1e;
+    }
+
 }
 
 /* When viewport is 480px or less */
@@ -550,3 +588,59 @@ input[type=number] {
     border: 1px solid var(--color-border);
 }
 
+.loader {
+    width: 60px;
+    aspect-ratio: 2;
+    --_g: no-repeat radial-gradient(circle closest-side,#bfbfbf 90%,#0000);
+    background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
+    background-size: calc(100%/3) 50%;
+    animation: l3 1s infinite linear;
+}
+
+@keyframes l3 {
+    20% {
+        background-position: 0% 0%, 50% 50%,100% 50%
+    }
+
+    40% {
+        background-position: 0% 100%, 50% 0%,100% 50%
+    }
+
+    60% {
+        background-position: 0% 50%, 50% 100%,100% 0%
+    }
+
+    80% {
+        background-position: 0% 50%, 50% 50%,100% 100%
+    }
+}
+#upBudgetSuggestion a {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background var(--transition-speed), transform var(--transition-speed);
+    text-decoration: none;
+}
+#upProgress {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Change the calendar icon to white */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Makes the icon white */
+    opacity: 1;
+    cursor: pointer;
+}
+.table-container h3 {
+    color:var(--color-primary);
+}

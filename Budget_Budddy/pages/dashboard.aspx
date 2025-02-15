@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="dashboard.aspx.cs"
-    Inherits="Budget_Budddy.pages.dashboard" Async="true"%>
+    Inherits="Budget_Budddy.pages.dashboard" Async="true" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head runat="server">
@@ -12,21 +12,24 @@
           integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
           crossorigin="anonymous"
           referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="../Styles/dashboard.css?v=1.0" />
+    <link rel="stylesheet" href="../Styles/dashboard.css" />
 
     <!-- Inline Script Block to Pass Server IDs as Global Variables -->
     <script type="text/javascript">
         var hiddenExpenseDataClientID = "<%= hiddenExpenseData.ClientID %>";
         var hiddenChartImageClientID = "<%= hiddenChartImage.ClientID %>";
-        var btnSettingsClientID = "<%= btnSettings.ClientID %>";
-        var hiddenBudgetAmountClientID = "<%= hiddenBudgetAmount.ClientID %>"; // New hidden field for available budget
+      var btnSettingsClientID = "<%= btnSettings.ClientID %>";
+      var hiddenBudgetAmountClientID = "<%= hiddenBudgetAmount.ClientID %>"; // New hidden field for available budget
     </script>
 
     <!-- External JavaScript File -->
-    <script type="text/javascript" src="../javascript/dashboard.js"></script>
+    <script type="text/javascript" src="../javascript/dashboard.js?v=1.0"></script>
   </head>
   <body>
     <form id="form1" runat="server">
+      <!-- ScriptManager is required for AJAX-enabled controls (UpdatePanel, UpdateProgress) -->
+      <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
       <!-- Header Section -->
       <div class="header">
         <h2>Budget Buddy</h2>
@@ -133,32 +136,33 @@
           <h3>Expense Overview</h3>
           <div class="chart-container">
             <canvas id="expenseChart"></canvas>
-            <p id="chartMessage" style="display:none; color:#fff; text-align:center; padding-top: 180px;">Please add data</p>
+            <p id="chartMessage" style="display:none; color:#fff; text-align:center; padding-top: 180px;">
+              Please add data
+            </p>
           </div>
         </div>
 
         <!-- Hidden fields for chart data and available budget -->
         <asp:HiddenField ID="hiddenExpenseData" runat="server" />
         <asp:HiddenField ID="hiddenChartImage" runat="server" />
-        <asp:HiddenField ID="hiddenBudgetAmount" runat="server" /> <!-- New hidden field for user's available budget -->
+        <asp:HiddenField ID="hiddenBudgetAmount" runat="server" />
       </div>
-
 
       <!-- Expenses Grid -->
       <div class="table-container">
         <h3>Your Expenses</h3>
         <!-- Export Buttons -->
         <div class="export-buttons">
-          <asp:Button
-            ID="btnExportPDF"
+          <asp:LinkButton
+            ID="lnkExportPDF"
             runat="server"
             Text="Export as PDF"
             CssClass="expense-btn"
             OnClick="btnExportPDF_Click"
             OnClientClick="return captureChartForExport();"
             CausesValidation="false" />
-          <asp:Button
-            ID="btnExportExcel"
+          <asp:LinkButton
+            ID="lnkExportExcel"
             runat="server"
             Text="Export as Excel"
             CssClass="expense-btn"
@@ -178,11 +182,15 @@
           <Columns>
             <%-- ID Column (read-only) --%>
             <asp:TemplateField HeaderText="ID">
-              <ItemTemplate> <%# Eval("ID") %> </ItemTemplate>
+              <ItemTemplate>
+                <%# Eval("ID") %>
+              </ItemTemplate>
             </asp:TemplateField>
             <%-- Category Column --%>
             <asp:TemplateField HeaderText="Category">
-              <ItemTemplate> <%# Eval("Category") %> </ItemTemplate>
+              <ItemTemplate>
+                <%# Eval("Category") %>
+              </ItemTemplate>
               <EditItemTemplate>
                 <asp:TextBox
                   ID="txtCategoryEdit"
@@ -206,7 +214,9 @@
             </asp:TemplateField>
             <%-- Description Column --%>
             <asp:TemplateField HeaderText="Description">
-              <ItemTemplate> <%# Eval("Description") %> </ItemTemplate>
+              <ItemTemplate>
+                <%# Eval("Description") %>
+              </ItemTemplate>
               <EditItemTemplate>
                 <asp:TextBox
                   ID="txtDescriptionEdit"
@@ -270,13 +280,37 @@
             </asp:TemplateField>
           </Columns>
         </asp:GridView>
+        <asp:Label ID="lblMessage" runat="server" ForeColor="Red"></asp:Label>
       </div>
 
-     <!-- Budget Suggestions Section -->
-    <div class="suggestions-section">
-        <h3>Budget Suggestions</h3>
-        <asp:Literal ID="budgetSuggestionsLiteral" runat="server" Text="Loading suggestions..." Mode="PassThrough"></asp:Literal>
-    </div>
+      <!-- Budget Suggestions Section -->
+      <div class="suggestions-section">
+        <asp:UpdatePanel ID="upBudgetSuggestion" runat="server">
+          <ContentTemplate>
+            <asp:LinkButton 
+              ID="lnkGetBudgetSuggestion" 
+              runat="server" 
+              Text="Get Budget Suggestion" 
+              CssClass="suggestion-btn"
+              OnClick="lnkGetBudgetSuggestion_Click"
+              CausesValidation="false" />
+            <br /><br />
+            <asp:Literal ID="budgetSuggestionsLiteral" runat="server"></asp:Literal>
+          </ContentTemplate>
+          <Triggers>
+            <asp:AsyncPostBackTrigger ControlID="lnkGetBudgetSuggestion" EventName="Click" />
+          </Triggers>
+        </asp:UpdatePanel>
+
+        <asp:UpdateProgress ID="upProgress" runat="server" AssociatedUpdatePanelID="upBudgetSuggestion">
+          <ProgressTemplate>
+              <div class="loader-container">
+                <div class="loader"></div>
+              </div>
+          </ProgressTemplate>
+        </asp:UpdateProgress>
+      </div>
+
       <!-- Footer -->
       <div class="footer">
         <p>&copy; 2025 Budget Buddy. All Rights Reserved.</p>

@@ -11,6 +11,14 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
+using System.Web.UI.WebControls;
+
+// Added namespaces for AI API integration
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Budget_Budddy.pages
 {
@@ -33,32 +41,18 @@ namespace Budget_Budddy.pages
                 Context.ApplicationInstance.CompleteRequest();
                 return;
             }
-            else
+
+            litUsername.Text = Session["username"].ToString();
+
+            if (!IsPostBack)
             {
-                litUsername.Text = Session["username"].ToString();
-                if (!IsPostBack)
-                {
-                    BindExpensesGrid();
-                    LoadExpenses();
-
-                    int userID = GetUserID(Session["username"].ToString());
-                    decimal totalExpenses = GetTotalExpenses(userID);
-
-                    if (totalExpenses == 0)
-                    {
-                        budgetSuggestionsLiteral.Text = "No expenses found. Please add some expenses to see a budget suggestion.";
-                    }
-                    else
-                    {
-                        Dictionary<string, decimal> categoryTotals = GetCategoryTotals(userID);
-                        string rawSuggestion = await GetBudgetSuggestionGeminiAsync(totalExpenses, categoryTotals);
-                        //rawSuggestion = TruncateText(rawSuggestion, 400); // if needed
-                        string formattedSuggestion = FormatSuggestionUI(rawSuggestion);
-                        budgetSuggestionsLiteral.Text = formattedSuggestion;
-                    }
-                }
+                BindExpensesGrid();
+                LoadExpenses(); // Update charts and grid as 
+                budgetSuggestionsLiteral.Visible = false;
             }
         }
+
+
 
         private void TestDatabaseConnection()
         {
@@ -119,7 +113,7 @@ namespace Budget_Budddy.pages
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 hiddenExpenseData.Value = serializer.Serialize(expenseData);
                 // Trigger a chart update on the client side.
-                ClientScript.RegisterStartupScript(this.GetType(), "updateChart", "setTimeout(updateChart, 1000);", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "updateChart", "updateChart();", true);
             }
             catch (Exception ex)
             {
@@ -171,7 +165,6 @@ namespace Budget_Budddy.pages
         {
             try
             {
-                // Server-side check: do not allow negative amount.
                 decimal amountValue = Convert.ToDecimal(txtAmount.Text);
                 if (amountValue < 0)
                 {
@@ -180,25 +173,10 @@ namespace Budget_Budddy.pages
                 }
 
                 int userID = GetUserID(Session["username"].ToString());
+
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    // Check for duplicate expense.
-                    string duplicateQuery = "SELECT COUNT(*) FROM Expenses WHERE UserID = @UserID AND Category = @Category AND Amount = @Amount AND Description = @Description AND ExpenseDate = @ExpenseDate";
-                    using (SqlCommand duplicateCmd = new SqlCommand(duplicateQuery, conn))
-                    {
-                        duplicateCmd.Parameters.AddWithValue("@UserID", userID);
-                        duplicateCmd.Parameters.AddWithValue("@Category", txtCategory.Text);
-                        duplicateCmd.Parameters.AddWithValue("@Amount", amountValue);
-                        duplicateCmd.Parameters.AddWithValue("@Description", txtDescription.Text);
-                        duplicateCmd.Parameters.AddWithValue("@ExpenseDate", Convert.ToDateTime(txtDate.Text));
-                        int duplicateCount = (int)duplicateCmd.ExecuteScalar();
-                        if (duplicateCount > 0)
-                        {
-                            ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Duplicate expense exists.');", true);
-                            return;
-                        }
-                    }
                     string query = "INSERT INTO Expenses (UserID, Category, Amount, Description, ExpenseDate) VALUES (@UserID, @Category, @Amount, @Description, @ExpenseDate)";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -210,16 +188,21 @@ namespace Budget_Budddy.pages
                         cmd.ExecuteNonQuery();
                     }
                 }
+
                 ClearInputFields();
                 BindExpensesGrid();
-                LoadExpenses();
-                Response.Redirect(Request.RawUrl);
+
+                // Remove extra LoadExpenses() call
+                // LoadExpenses(); 
+
+                Response.Redirect(Request.RawUrl, false); // Avoid unnecessary reloads
             }
             catch (Exception ex)
             {
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", $"alert('Error adding expense: {ex.Message}');", true);
             }
         }
+
 
         // -------------------------
         // GridView Binding and Events
@@ -260,41 +243,54 @@ namespace Budget_Budddy.pages
 
         protected void gvExpenses_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
-            int expenseID = Convert.ToInt32(gvExpenses.DataKeys[e.RowIndex].Value);
-            var row = gvExpenses.Rows[e.RowIndex];
-
-            // Retrieve updated values from the GridView cells.
-            string category = ((System.Web.UI.WebControls.TextBox)(row.Cells[1].Controls[0])).Text;
-            string amountText = ((System.Web.UI.WebControls.TextBox)(row.Cells[2].Controls[0])).Text;
-            string description = ((System.Web.UI.WebControls.TextBox)(row.Cells[3].Controls[0])).Text;
-            string dateText = ((System.Web.UI.WebControls.TextBox)(row.Cells[4].Controls[0])).Text;
-
-            if (!decimal.TryParse(amountText, out decimal amount) || !DateTime.TryParse(dateText, out DateTime expenseDate))
-            {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Invalid input.');", true);
-                return;
-            }
-
             try
             {
+                int expenseID = Convert.ToInt32(gvExpenses.DataKeys[e.RowIndex].Value); // Get the expense ID being updated
+                GridViewRow row = gvExpenses.Rows[e.RowIndex]; // Get the current editing row
+
+                // Find the TextBoxes inside the row
+                TextBox txtCategoryEdit = (TextBox)row.FindControl("txtCategoryEdit");
+                TextBox txtAmountEdit = (TextBox)row.FindControl("txtAmountEdit");
+                TextBox txtDescriptionEdit = (TextBox)row.FindControl("txtDescriptionEdit");
+                TextBox txtDateEdit = (TextBox)row.FindControl("txtDateEdit");
+
+                // Debugging check - Make sure controls exist
+                if (txtAmountEdit == null)
+                {
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Error: txtAmountEdit not found!');", true);
+                    return;
+                }
+
+                // Extract new values
+                string newCategory = txtCategoryEdit.Text.Trim();
+                decimal newAmount = Convert.ToDecimal(txtAmountEdit.Text.Trim());
+                string newDescription = txtDescriptionEdit.Text.Trim();
+                DateTime newExpenseDate = Convert.ToDateTime(txtDateEdit.Text.Trim());
+
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = "UPDATE Expenses SET Category = @Category, Amount = @Amount, Description = @Description, ExpenseDate = @ExpenseDate WHERE ID = @ExpenseID";
+                    string query = "UPDATE Expenses SET Category = @Category, Amount = @Amount, Description = @Description, ExpenseDate = @ExpenseDate WHERE ID = @ID";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@Category", category);
-                        cmd.Parameters.AddWithValue("@Amount", amount);
-                        cmd.Parameters.AddWithValue("@Description", description);
-                        cmd.Parameters.AddWithValue("@ExpenseDate", expenseDate);
-                        cmd.Parameters.AddWithValue("@ExpenseID", expenseID);
+                        cmd.Parameters.AddWithValue("@Category", newCategory);
+                        cmd.Parameters.AddWithValue("@Amount", newAmount);
+                        cmd.Parameters.AddWithValue("@Description", newDescription);
+                        cmd.Parameters.AddWithValue("@ExpenseDate", newExpenseDate);
+                        cmd.Parameters.AddWithValue("@ID", expenseID);
+
                         cmd.ExecuteNonQuery();
                     }
                 }
+
+                // ✅ 1. Exit Edit Mode
                 gvExpenses.EditIndex = -1;
+
+                // ✅ 2. Reload Data to Reflect Changes
                 BindExpensesGrid();
-                LoadExpenses(); // Update chart data.
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Expense updated successfully.');", true);
+
+                // ✅ 3. Refresh the UI (Force Page Reload)
+                Response.Redirect(Request.RawUrl, false);
             }
             catch (Exception ex)
             {
@@ -302,7 +298,13 @@ namespace Budget_Budddy.pages
             }
         }
 
-        protected void gvExpenses_RowCancelingEdit(object sender, System.Web.UI.WebControls.GridViewCancelEditEventArgs e)
+
+
+
+
+
+
+        protected void gvExpenses_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
         {
             gvExpenses.EditIndex = -1;
             BindExpensesGrid();
@@ -573,10 +575,13 @@ namespace Budget_Budddy.pages
                     using (MemoryStream ms = new MemoryStream(imageBytes))
                     {
                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                        var picture = worksheet.Drawings.AddPicture("ChartImage", img);
-                        // Position the chart image below the table.
-                        picture.SetPosition(rowIndex + 1, 0, 0, 0);
-                        picture.SetSize(400, 400);
+                        if (worksheet.Drawings["ChartImage"] == null)
+                        {
+                            var picture = worksheet.Drawings.AddPicture("ChartImage", img);
+                            picture.SetPosition(rowIndex + 1, 0, 0, 0);
+                            picture.SetSize(400, 400);
+                        }
+
                     }
                 }
 
@@ -654,6 +659,35 @@ namespace Budget_Budddy.pages
 
             return formatted;
         }
+        protected async void lnkGetBudgetSuggestion_Click(object sender, EventArgs e)
+        {
+            int userID = GetUserID(Session["username"].ToString());
+            decimal totalExpenses = GetTotalExpenses(userID);
+
+            if (totalExpenses == 0)
+            {
+                budgetSuggestionsLiteral.Text = "No expenses found. Please add some expenses to see a budget suggestion.";
+            }
+            else
+            {
+                Dictionary<string, decimal> categoryTotals = GetCategoryTotals(userID);
+                string rawSuggestion = await GetBudgetSuggestionGeminiAsync(totalExpenses, categoryTotals);
+
+                // For debugging, output the raw suggestion
+                if (string.IsNullOrWhiteSpace(rawSuggestion))
+                {
+                    budgetSuggestionsLiteral.Text = "API returned an empty response.";
+                }
+                else
+                {
+                    string formattedSuggestion = FormatSuggestionUI(rawSuggestion);
+                    budgetSuggestionsLiteral.Text = formattedSuggestion;
+                }
+            }
+            budgetSuggestionsLiteral.Visible = true;
+        }
+
+
 
         // -------------------------
         // AI API Integration for Budget Suggestions

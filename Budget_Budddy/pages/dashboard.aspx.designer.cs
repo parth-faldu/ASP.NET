@@ -24,6 +24,15 @@ namespace Budget_Budddy.pages
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
+        /// ScriptManager1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.ScriptManager ScriptManager1;
+
+        /// <summary>
         /// litUsername control.
         /// </summary>
         /// <remarks>
@@ -141,22 +150,22 @@ namespace Budget_Budddy.pages
         protected global::System.Web.UI.WebControls.HiddenField hiddenBudgetAmount;
 
         /// <summary>
-        /// btnExportPDF control.
+        /// lnkExportPDF control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExportPDF;
+        protected global::System.Web.UI.WebControls.LinkButton lnkExportPDF;
 
         /// <summary>
-        /// btnExportExcel control.
+        /// lnkExportExcel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExportExcel;
+        protected global::System.Web.UI.WebControls.LinkButton lnkExportExcel;
 
         /// <summary>
         /// gvExpenses control.
@@ -168,6 +177,33 @@ namespace Budget_Budddy.pages
         protected global::System.Web.UI.WebControls.GridView gvExpenses;
 
         /// <summary>
+        /// lblMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMessage;
+
+        /// <summary>
+        /// upBudgetSuggestion control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel upBudgetSuggestion;
+
+        /// <summary>
+        /// lnkGetBudgetSuggestion control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkGetBudgetSuggestion;
+
+        /// <summary>
         /// budgetSuggestionsLiteral control.
         /// </summary>
         /// <remarks>
@@ -175,5 +211,14 @@ namespace Budget_Budddy.pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal budgetSuggestionsLiteral;
+
+        /// <summary>
+        /// upProgress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdateProgress upProgress;
     }
 }

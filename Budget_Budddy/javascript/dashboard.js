@@ -11,26 +11,41 @@ function toggleDropdown() {
 // Update the chart using data from the hiddenExpenseData field
 function updateChart() {
     try {
-        var hiddenData = document.getElementById(hiddenExpenseDataClientID).value || "{}";
-        var expenseData = JSON.parse(hiddenData);
-        var chartLabels = Object.keys(expenseData);
-        var canvas = document.getElementById("expenseChart");
-        var messageEl = document.getElementById("chartMessage");
-
-        if (chartLabels.length === 0) {
-            canvas.style.display = "none";
-            messageEl.style.display = "block";
-            messageEl.textContent = "Please add data";
+        var hiddenDataElement = document.getElementById(hiddenExpenseDataClientID);
+        if (!hiddenDataElement) {
+            console.error("Error: hiddenExpenseDataClientID element not found.");
             return;
-        } else {
-            canvas.style.display = "block";
-            messageEl.style.display = "none";
         }
 
-        var chartValues = chartLabels.map(function (label) {
-            return expenseData[label].amount;
-        });
+        var hiddenData = hiddenDataElement.value || "[]"; // Ensure it's a string
+        var expenseData;
+        try {
+            expenseData = JSON.parse(hiddenData);
+        } catch (err) {
+            console.error("Error parsing JSON:", err);
+            expenseData = [];
+        }
 
+        if (!Array.isArray(expenseData)) {
+            console.error("Error: Parsed expenseData is not an array", expenseData);
+            expenseData = [];
+        }
+
+
+        // Extract categories as labels
+        var chartLabels = expenseData.map(item => item.category || "Unknown");
+
+        if (chartLabels.length === 0) {
+            console.warn("No labels found, chart will not be displayed.");
+            document.getElementById("expenseChart").style.display = "none";
+            document.getElementById("chartMessage").style.display = "block";
+            document.getElementById("chartMessage").textContent = "Please add data";
+            return;
+        }
+
+        var chartValues = expenseData.map(item => item.amount || 0);
+
+        var canvas = document.getElementById("expenseChart");
         var ctx = canvas.getContext("2d");
 
         if (window.expenseChart && typeof window.expenseChart.destroy === "function") {
@@ -55,11 +70,12 @@ function updateChart() {
             }
         });
 
-        console.log("Chart updated with data:", expenseData);
+        //console.log("Chart updated with data:", expenseData);
     } catch (error) {
         console.error("Error updating chart:", error);
     }
 }
+
 
 // Capture the chart as a Base64 image for export
 function captureChartForExport() {
@@ -72,7 +88,20 @@ function captureChartForExport() {
 
 // Update chart and set up event listeners on page load
 document.addEventListener("DOMContentLoaded", function () {
-    updateChart();
+    if (!window.chartInitialized) {
+        window.chartInitialized = true;
+        updateChart();
+    }
+
+    // Ensure hiddenExpenseDataClientID is defined before adding event listeners
+    var hiddenExpenseInput = document.getElementById(hiddenExpenseDataClientID);
+    if (hiddenExpenseInput) {
+        // Remove any existing event listener to avoid duplicate calls
+        hiddenExpenseInput.removeEventListener("change", updateChart);
+
+        // Add event listener to update the chart when data changes
+        hiddenExpenseInput.addEventListener("change", updateChart);
+    }
 
     // Add event listener for the Amount field to prevent negative values.
     var txtAmount = document.getElementById("<%= txtAmount.ClientID %>");
