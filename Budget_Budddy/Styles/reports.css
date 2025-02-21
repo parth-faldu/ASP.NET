@@ -1,0 +1,88 @@
+﻿/* Updated Export Buttons Container */
+.export-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 20px 0 20px; /* 20px top margin, then 20px sides; adjust as needed */
+    gap: 10px;
+}
+
+/* Export Buttons (existing styles) */
+.expense-btn {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background var(--transition-speed), transform var(--transition-speed);
+    text-decoration: none;
+}
+
+.expense-btn:hover {
+    background-color: var(--color-hover);
+    transform: scale(1.05);
+}
+
+/* Sidebar remains unchanged */
+
+/* Chart Container (fixed size) */
+.chart-container {
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Chart Message */
+#chartMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #555;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* GridView Table Styling */
+.expense-grid {
+    width: 90%;
+    margin: 30px auto;
+    border-collapse: collapse;
+    font-family: 'Poppins', sans-serif;
+}
+
+.expense-grid th,
+.expense-grid td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.expense-grid th {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .chart-container {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .expense-grid {
+        width: 100%;
+        font-size: 12px;
+    }
+    
+    .export-buttons {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+}

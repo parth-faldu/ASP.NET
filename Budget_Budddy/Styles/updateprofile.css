@@ -1,28 +1,4 @@
-﻿/* ----------------------------------------------------------------------
-   updateprofile.css - Styles for the Update Profile Page
----------------------------------------------------------------------- */
-
-/* CSS Variables */
-:root {
-    --color-bg: #121212; /* Main background color */
-    --color-text: #fff; /* General text color */
-    --color-container: #1e1e1e; /* Container background */
-    --color-input-bg: #333; /* Input field background */
-    --color-border: #444; /* Border color */
-    --color-accent: #ff4081; /* Accent color for headings, buttons, links */
-    --color-hover: #e20073; /* Hover color for buttons */
-    --shadow-light: 0 0 10px rgba(0, 0, 0, 0.3); /* Container shadow */
-    --font-family: 'Poppins', sans-serif;
-}
-
-/* Global Styles */
-body {
-    font-family: var(--font-family);
-    margin: 0;
-    padding: 0;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-}
+﻿
 
 /* Container for the Update Profile Form */
 form#form1 {

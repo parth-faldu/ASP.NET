@@ -91,13 +91,26 @@
     <Content Include="javascript\dashboard.js" />
     <Content Include="javascript\index.js" />
     <Content Include="javascript\signup.js" />
+    <Content Include="pages\addExpense.aspx" />
+    <Content Include="pages\budgetSuggestion.aspx" />
+    <Content Include="pages\manageExpense.aspx" />
+    <Content Include="pages\reports.aspx" />
+    <Content Include="pages\settings.aspx" />
+    <Content Include="Styles\addExpense.css" />
     <Content Include="pages\AdminDashboard.aspx" />
     <Content Include="pages\dashboard.aspx" />
     <Content Include="pages\SignUp.aspx" />
     <Content Include="pages\updateprofile.aspx" />
     <Content Include="Styles\admin.css" />
+    <Content Include="Styles\baseStyle.css" />
+    <Content Include="Styles\budegtSuggestion.css" />
     <Content Include="Styles\dashboard.css" />
+    <Content Include="Styles\header.css" />
     <Content Include="Styles\index.css" />
+    <Content Include="Styles\manageExpense.css" />
+    <Content Include="Styles\reports.css" />
+    <Content Include="Styles\settings.css" />
+    <Content Include="Styles\sidebar.css" />
     <Content Include="Styles\signup.css" />
     <Content Include="Styles\updateprofile.css" />
     <Content Include="Web.config" />
@@ -110,6 +123,13 @@
     <Compile Include="index.aspx.designer.cs">
       <DependentUpon>index.aspx</DependentUpon>
     </Compile>
+    <Compile Include="pages\addExpense.aspx.cs">
+      <DependentUpon>addExpense.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="pages\addExpense.aspx.designer.cs">
+      <DependentUpon>addExpense.aspx</DependentUpon>
+    </Compile>
     <Compile Include="pages\AdminDashboard.aspx.cs">
       <DependentUpon>AdminDashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -117,12 +137,40 @@
     <Compile Include="pages\AdminDashboard.aspx.designer.cs">
       <DependentUpon>AdminDashboard.aspx</DependentUpon>
     </Compile>
+    <Compile Include="pages\budgetSuggestion.aspx.cs">
+      <DependentUpon>budgetSuggestion.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="pages\budgetSuggestion.aspx.designer.cs">
+      <DependentUpon>budgetSuggestion.aspx</DependentUpon>
+    </Compile>
     <Compile Include="pages\dashboard.aspx.cs">
       <DependentUpon>dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="pages\dashboard.aspx.designer.cs">
       <DependentUpon>dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="pages\manageExpense.aspx.cs">
+      <DependentUpon>manageExpense.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="pages\manageExpense.aspx.designer.cs">
+      <DependentUpon>manageExpense.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="pages\reports.aspx.cs">
+      <DependentUpon>reports.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="pages\reports.aspx.designer.cs">
+      <DependentUpon>reports.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="pages\settings.aspx.cs">
+      <DependentUpon>settings.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="pages\settings.aspx.designer.cs">
+      <DependentUpon>settings.aspx</DependentUpon>
     </Compile>
     <Compile Include="pages\updateprofile.aspx.cs">
       <DependentUpon>updateprofile.aspx</DependentUpon>

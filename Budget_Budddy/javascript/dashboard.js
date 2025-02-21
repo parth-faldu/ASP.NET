@@ -31,7 +31,6 @@ function updateChart() {
             expenseData = [];
         }
 
-
         // Extract categories as labels
         var chartLabels = expenseData.map(item => item.category || "Unknown");
 
@@ -75,7 +74,6 @@ function updateChart() {
         console.error("Error updating chart:", error);
     }
 }
-
 
 // Capture the chart as a Base64 image for export
 function captureChartForExport() {

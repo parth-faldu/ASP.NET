@@ -1,0 +1,41 @@
+﻿.sidebar {
+    width: 200px;
+    height: 100vh;
+    background: var(--color-container);
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    ul
+
+{
+    list-style-type: none;
+    padding-left: unset;
+}
+
+i {
+    margin-right: 2px;
+}
+
+a {
+    background-color: unset;
+    text-decoration: none;
+    color: white;
+    &:hover
+
+{
+    color: var(--color-primary);
+}
+}
+
+li {
+    margin: 40px 0;
+    border-radius: 6px;
+    padding: 8px 25px;
+}
+}
+
+.main-content {
+    margin-left: 200px;
+    width: calc(100% - 200px);
+}

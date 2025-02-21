@@ -1,0 +1,116 @@
+﻿/* Left Section (Expense Tracker) */
+.left-section {
+    background: var(--container-gradient);
+    padding: 30px;
+    border-radius: 8px;
+    margin:1rem;
+    box-shadow: 0 4px 15px var(--shadow-light);
+    border: 1px solid var(--color-border);
+}
+
+    .left-section h3 {
+        color: var(--color-primary);
+        margin-bottom: 20px;
+        font-size: 1.6em;
+    }
+
+.container {
+    padding:2rem;
+}
+/* Form Groups */
+.form-group {
+    margin-bottom: 20px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--color-text);
+        font-weight: 600;
+    }
+
+/* Input Fields */
+.input-field {
+    width: 95%;
+    padding: 12px;
+    margin: 8px 0;
+    background-color: var(--color-input-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    color: var(--color-text);
+    font-size: 16px;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+    .input-field:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 8px var(--color-primary);
+    }
+
+/* Expense Button */
+.expense-btn {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background var(--transition-speed), transform var(--transition-speed);
+    text-decoration: none;
+}
+
+    .expense-btn:hover {
+        background-color: var(--color-hover);
+        transform: scale(1.05);
+    }
+
+/* Buttons Container */
+#Buttons {
+    display: flex;
+    gap: 10px;
+}
+
+    #Buttons input {
+        width: 100%;
+    }
+/* Media Queries for the Add Expense Page */
+/* When viewport is 992px or less */
+@media screen and (max-width: 992px) {
+    /* Adjust the expense container (left-section) */
+    .left-section {
+        width: 90%;
+        margin: 20px auto;
+        padding: 20px;
+    }
+    /* Ensure input fields span full width */
+    .input-field {
+        width: 100%;
+    }
+    /* Slightly adjust expense button size */
+    .expense-btn {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+}
+
+/* When viewport is 768px or less */
+@media screen and (max-width: 768px) {
+    .left-section {
+        width: 95%;
+        margin: 15px auto;
+        padding: 15px;
+    }
+
+    .input-field {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .expense-btn {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+}
+
