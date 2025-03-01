@@ -60,6 +60,15 @@ namespace Budget_Budddy.pages
         protected global::System.Web.UI.UpdatePanel upBudgetSuggestion;
 
         /// <summary>
+        /// txtNextYearBudget control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtNextYearBudget;
+
+        /// <summary>
         /// lnkGetBudgetSuggestion control.
         /// </summary>
         /// <remarks>

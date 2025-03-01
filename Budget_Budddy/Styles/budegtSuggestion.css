@@ -15,38 +15,80 @@
         color: var(--color-primary);
     }
 
-/* Loader Styles (used by UpdateProgress) */
-.loader {
-    width: 60px;
-    aspect-ratio: 2;
-    --_g: no-repeat radial-gradient(circle closest-side, #bfbfbf 90%, transparent);
-    background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
-    background-size: calc(100% / 3) 50%;
-    animation: l3 1s infinite linear;
+/* New Loader Styles */
+.loader,
+.loader:before,
+.loader:after {
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    animation-fill-mode: both;
+    animation: bblFadInOut 1.8s infinite ease-in-out;
 }
 
-@keyframes l3 {
-    20% {
-        background-position: 0% 0%, 50% 50%, 100% 50%;
+.loader {
+    color: #FFF;
+    font-size: 7px;
+    position: relative;
+    text-indent: -9999em;
+    transform: translateZ(0);
+    animation-delay: -0.16s;
+}
+
+    .loader:before,
+    .loader:after {
+        content: '';
+        position: absolute;
+        top: 0;
+    }
+
+    .loader:before {
+        left: -3.5em;
+        animation-delay: -0.32s;
+    }
+
+    .loader:after {
+        left: 3.5em;
+    }
+
+@keyframes bblFadInOut {
+    0%, 80%, 100% {
+        box-shadow: 0 2.5em 0 -1.3em
     }
 
     40% {
-        background-position: 0% 100%, 50% 0%, 100% 50%;
-    }
-
-    60% {
-        background-position: 0% 50%, 50% 100%, 100% 0%;
-    }
-
-    80% {
-        background-position: 0% 50%, 50% 50%, 100% 100%;
+        box-shadow: 0 2.5em 0 0
     }
 }
 
+/* Loader Container */
 .loader-container {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* Styles for budget input */
+.budget-input {
+    margin-bottom: 20px;
+}
+
+.input-box {
+    width: 200px;
+    padding: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+a {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background var(--transition-speed), transform var(--transition-speed);
+    text-decoration: none;
 }
 /* Media Queries for Responsiveness */
 @media screen and (max-width: 900px) {
@@ -55,4 +97,14 @@
         padding: 20px;
         margin: 10px auto;
     }
+}
+.loader-container {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    position: fixed; /* or absolute, depending on your layout */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
 }

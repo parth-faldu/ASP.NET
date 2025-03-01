@@ -7,9 +7,9 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web.UI;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-
 
 namespace Budget_Budddy.pages
 {
@@ -30,11 +30,11 @@ namespace Budget_Budddy.pages
 
             if (!IsPostBack)
             {
-                //BindExpensesGrid();
-                LoadExpenses(); // Update charts and grid as 
+                LoadExpenses();
                 budgetSuggestionsLiteral.Visible = false;
             }
         }
+
         private void LoadExpenses()
         {
             try
@@ -68,7 +68,7 @@ namespace Budget_Budddy.pages
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 hiddenExpenseData.Value = serializer.Serialize(expenseData);
-                // Trigger a chart update on the client side.
+                // Trigger a client-side update (for example, updating charts)
                 ClientScript.RegisterStartupScript(this.GetType(), "updateChart", "updateChart();", true);
             }
             catch (Exception ex)
@@ -95,10 +95,24 @@ namespace Budget_Budddy.pages
             return userID;
         }
 
-        protected async void lnkGetBudgetSuggestion_Click(object sender, EventArgs e)
+        protected void lnkGetBudgetSuggestion_Click(object sender, EventArgs e)
         {
+            Page.RegisterAsyncTask(new PageAsyncTask(ProcessBudgetSuggestionAsync));
+        }
+
+        private async Task ProcessBudgetSuggestionAsync()
+        {
+            await Task.Delay(3000);
             int userID = GetUserID(Session["username"].ToString());
             decimal totalExpenses = GetTotalExpenses(userID);
+
+            decimal targetBudget = 0;
+            if (!decimal.TryParse(txtNextYearBudget.Text.Trim(), out targetBudget) || targetBudget <= 0)
+            {
+                budgetSuggestionsLiteral.Text = "Please enter a valid target budget for next year.";
+                budgetSuggestionsLiteral.Visible = true;
+                return;
+            }
 
             if (totalExpenses == 0)
             {
@@ -107,9 +121,8 @@ namespace Budget_Budddy.pages
             else
             {
                 Dictionary<string, decimal> categoryTotals = GetCategoryTotals(userID);
-                string rawSuggestion = await GetBudgetSuggestionGeminiAsync(totalExpenses, categoryTotals);
+                string rawSuggestion = await GetBudgetSuggestionGeminiAsync(totalExpenses, categoryTotals, targetBudget);
 
-                // For debugging, output the raw suggestion
                 if (string.IsNullOrWhiteSpace(rawSuggestion))
                 {
                     budgetSuggestionsLiteral.Text = "API returned an empty response.";
@@ -122,6 +135,7 @@ namespace Budget_Budddy.pages
             }
             budgetSuggestionsLiteral.Visible = true;
         }
+
 
         private decimal GetTotalExpenses(int userID)
         {
@@ -142,6 +156,7 @@ namespace Budget_Budddy.pages
             }
             return total;
         }
+
         private Dictionary<string, decimal> GetCategoryTotals(int userID)
         {
             var categoryTotals = new Dictionary<string, decimal>();
@@ -166,13 +181,12 @@ namespace Budget_Budddy.pages
             return categoryTotals;
         }
 
-        private async Task<string> GetBudgetSuggestionGeminiAsync(decimal totalExpenses, Dictionary<string, decimal> categoryTotals)
+        private async Task<string> GetBudgetSuggestionGeminiAsync(decimal totalExpenses, Dictionary<string, decimal> categoryTotals, decimal targetBudget)
         {
             // Build a summary string for category spending.
             var categorySummary = new StringBuilder();
             foreach (var entry in categoryTotals)
             {
-                // Format each category and its total (e.g., "Groceries: $150.00").
                 categorySummary.Append($"{entry.Key}: {entry.Value:C}, ");
             }
             if (categorySummary.Length > 2)
@@ -180,20 +194,22 @@ namespace Budget_Budddy.pages
                 categorySummary.Length -= 2; // Remove trailing comma and space.
             }
 
-            // Construct the prompt solely based on the user's expense data.
+            // Construct the prompt including the target budget.
             string prompt = $"I have been tracking my expenses meticulously. " +
                 $"I've spent a total of {totalExpenses:C}. " +
                 $"Here is the breakdown of my spending by category: {categorySummary}. " +
-                "Based solely on this data, please provide a concise (only under 400 words) and actionable recommendation " +
-                "to help optimize my spending habits. Highlight any areas of overspending and suggest steps to better manage my expenses.";
+                $"I am planning for next year with a target budget of {targetBudget:C}. " +
+                "Based solely on this data, please provide a concise (under 400 words) and actionable recommendation " +
+                "on how to optimize my spending habits for next year. Highlight any areas of overspending and suggest steps " +
+                "to better manage my expenses to meet the new budget.";
 
             // Prepare the request payload.
             var requestBody = new
             {
                 contents = new[]
                 {
-            new { parts = new[] { new { text = prompt } } }
-        },
+                    new { parts = new[] { new { text = prompt } } }
+                },
             };
 
             // Retrieve your Gemini API key from configuration.
@@ -244,26 +260,20 @@ namespace Budget_Budddy.pages
 
         private string FormatSuggestionUI(string rawSuggestion)
         {
-            // Replace markers for headings with HTML headings.
+            // Replace markdown markers with HTML headings.
             string formatted = rawSuggestion;
             formatted = formatted.Replace("**Area of Overspending:**", "</p><h3 style='color:#007ACC;'>Area of Overspending</h3><p>");
             formatted = formatted.Replace("**Actionable Recommendations:**", "</p><h3 style='color:#007ACC;'>Actionable Recommendations</h3>");
-
-            // Convert markdown bold markers (**text**) into <strong> tags.
+            // Convert markdown bold to <strong> tags.
             formatted = System.Text.RegularExpressions.Regex.Replace(formatted, @"\*\*(.+?)\*\*", "<strong>$1</strong>");
 
-            // Now, extract and rebuild the recommendations as an ordered list.
-            // We assume that the recommendations start immediately after the closing </h3> of the "Actionable Recommendations" heading.
+            // Rebuild recommendations as an ordered list if applicable.
             string recHeading = "</h3>";
             int recIndex = formatted.IndexOf(recHeading);
             if (recIndex != -1)
             {
-                // The recommendations text starts after the heading.
                 int start = recIndex + recHeading.Length;
                 string recText = formatted.Substring(start).Trim();
-
-                // Use regex to capture the recommendation items.
-                // This pattern matches a number followed by a period and whitespace, then captures the text until the next numbered item or end-of-string.
                 var matches = System.Text.RegularExpressions.Regex.Matches(recText, @"\d+\.\s+(.*?)(?=\d+\.\s+|$)", System.Text.RegularExpressions.RegexOptions.Singleline);
 
                 if (matches.Count > 0)
@@ -271,20 +281,14 @@ namespace Budget_Budddy.pages
                     StringBuilder listBuilder = new StringBuilder("<ol>");
                     foreach (System.Text.RegularExpressions.Match match in matches)
                     {
-                        // match.Groups[1] contains the text after the number and period.
                         string itemText = match.Groups[1].Value.Trim();
                         listBuilder.Append("<li>" + itemText + "</li>");
                     }
                     listBuilder.Append("</ol>");
-
-                    // Replace the original recommendations text with the formatted ordered list.
                     formatted = formatted.Substring(0, start) + listBuilder.ToString();
                 }
             }
-
-            // Wrap the whole output in a div with basic styling.
             formatted = "<div style='font-family:Arial, sans-serif; color:#cecece; line-height:1.5;'>" + formatted + "</div>";
-
             return formatted;
         }
 
