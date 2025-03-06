@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="CRUD.aspx.cs" Inherits="CRUD.CRUD" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="CRUD.aspx.cs" Inherits="CRUD.CRUD" EnableEventValidation="false"%>
 
 <!DOCTYPE html>
 
@@ -32,44 +32,48 @@
             </div>
             <div>
                 <asp:Label ID="Label4" runat="server" Text="City"></asp:Label>
-                <asp:DropDownList ID="DropDownList1" runat="server">
-                    <asp:ListItem>Select</asp:ListItem>
+                <asp:DropDownList ID="DropDownList1" runat="server" Width="136px">
+                    <asp:ListItem >- - - Select - - -</asp:ListItem>
                     <asp:ListItem>Rajkot</asp:ListItem>
                     <asp:ListItem>Surat</asp:ListItem>
                 </asp:DropDownList>
-                <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" DataKeyNames="Id" DataSourceID="SqlDataSource1" EmptyDataText="There are no data records to display.">
-                    <Columns>
-                        <asp:BoundField DataField="Id" HeaderText="Id" ReadOnly="True" SortExpression="Id" />
-                        <asp:BoundField DataField="Name" HeaderText="Name" SortExpression="Name" />
-                        <asp:BoundField DataField="Gmail" HeaderText="Gmail" SortExpression="Gmail" />
-                        <asp:BoundField DataField="Gender" HeaderText="Gender" SortExpression="Gender" />
-                        <asp:BoundField DataField="City" HeaderText="City" SortExpression="City" />
-                    </Columns>
-                </asp:GridView>
-                <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:CRUD %>" DeleteCommand="DELETE FROM [emp] WHERE [Id] = @Id" InsertCommand="INSERT INTO [emp] ([Id], [Name], [Gmail], [Gender], [City]) VALUES (@Id, @Name, @Gmail, @Gender, @City)" ProviderName="<%$ ConnectionStrings:CRUD.ProviderName %>" SelectCommand="SELECT [Id], [Name], [Gmail], [Gender], [City] FROM [emp]" UpdateCommand="UPDATE [emp] SET [Name] = @Name, [Gmail] = @Gmail, [Gender] = @Gender, [City] = @City WHERE [Id] = @Id">
-                    <DeleteParameters>
-                        <asp:Parameter Name="Id" Type="Int32" />
-                    </DeleteParameters>
-                    <InsertParameters>
-                        <asp:Parameter Name="Id" Type="Int32" />
-                        <asp:Parameter Name="Name" Type="String" />
-                        <asp:Parameter Name="Gmail" Type="String" />
-                        <asp:Parameter Name="Gender" Type="String" />
-                        <asp:Parameter Name="City" Type="String" />
-                    </InsertParameters>
-                    <UpdateParameters>
-                        <asp:Parameter Name="Name" Type="String" />
-                        <asp:Parameter Name="Gmail" Type="String" />
-                        <asp:Parameter Name="Gender" Type="String" />
-                        <asp:Parameter Name="City" Type="String" />
-                        <asp:Parameter Name="Id" Type="Int32" />
-                    </UpdateParameters>
-                </asp:SqlDataSource>
             </div>
             <div>
-            <asp:Button ID="Button1" runat="server" Text="Submit" />
-            <asp:Button ID="Button2" runat="server" Text="Update" />
-            <asp:Button ID="Button3" runat="server" Text="Delete" />
+            <asp:Button ID="Button1" runat="server" Text="Save" OnClick="Button1_Click" />
+
+                <br />
+                <br />
+
+                <asp:Label ID="Label5" runat="server" Text=""></asp:Label>
+
+                <br />
+                <br />
+
+                <asp:GridView ID="GridView1" runat="server" CellPadding="4" ForeColor="#333333" GridLines="None" Height="29px" style="margin-top: 6px" Width="16px">
+                    <AlternatingRowStyle BackColor="White" />
+                    <Columns>
+                        <asp:TemplateField HeaderText="Action">
+                            <ItemTemplate>
+                                <asp:Button ID="Button4" runat="server" BackColor="#33CC33" CommandArgument='<%# Eval("Id") %>' ForeColor="White" Height="43px" Text="Select" Width="165px" OnClick="Button4_Click" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Delete">
+                            <ItemTemplate>
+                                <asp:Button ID="Button5" runat="server" BackColor="Red" CommandArgument='<%# Eval("Id") %>' ForeColor="White" Height="39px" Text="Delete" Width="178px" OnClick="Button5_Click" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                    <EditRowStyle BackColor="#7C6F57" />
+                    <FooterStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
+                    <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
+                    <PagerStyle BackColor="#666666" ForeColor="White" HorizontalAlign="Center" />
+                    <RowStyle BackColor="#E3EAEB" />
+                    <SelectedRowStyle BackColor="#C5BBAF" Font-Bold="True" ForeColor="#333333" />
+                    <SortedAscendingCellStyle BackColor="#F8FAFA" />
+                    <SortedAscendingHeaderStyle BackColor="#246B61" />
+                    <SortedDescendingCellStyle BackColor="#D4DFE1" />
+                    <SortedDescendingHeaderStyle BackColor="#15524A" />
+                </asp:GridView>
             </div>
         </div>
     </form>
